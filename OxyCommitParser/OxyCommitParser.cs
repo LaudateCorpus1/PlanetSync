@@ -17,7 +17,7 @@ namespace OxyCommitParser
         public string Hash { get; set; }
         public string Author { get; set; }
         public string Message { get; set; }
-        public string Date { get; set; }
+        public DateTime Date { get; set; }
     }
 
     internal class Result<T>
@@ -70,7 +70,7 @@ namespace OxyCommitParser
                     Author = lastCommit.commit.author.name,
                     Hash = lastCommitHash,
                     Message = lastCommit.commit.message,
-                    Date = lastCommit.commit.author.date
+                    Date = DateTime.Parse(lastCommit.commit.author.date.ToString())
                 }
             };
         }
