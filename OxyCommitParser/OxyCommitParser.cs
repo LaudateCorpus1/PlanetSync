@@ -1,65 +1,78 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace OxyCommitParser
 {
-    enum eCheckResult
+    internal enum RepoState
     {
-        UP_TO_DATE,
-        NEW_VERSION,
-
-        FAILED
+        UpToDate,
+        NewUpdates
     }
 
-    struct OxyCommit
+    internal class Commit
     {
-        string hash,
-               author,
-               message;
+        public string Hash { get; set; }
+        public string Author { get; set; }
+        public string Message { get; set; }
+        public string Date { get; set; }
     }
 
-    class CheckResult
+    internal class Result<T>
     {
-        eCheckResult checkResult;
-
-        OxyCommit[] commits;
+        public RepoState State;
+        public T Data;
     }
 
-
-    class OxyCommitParser
+    static class OxyCommitParser
     {
-        public static string Get(string uri)
+        private static List<dynamic> Get(string uri)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
-           // request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            request.UserAgent = "OxyCommitParser";
 
             using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
             using (Stream stream = response.GetResponseStream())
-            using (StreamReader reader = new StreamReader(stream))
+            using (StreamReader reader = new StreamReader(stream ?? throw new NullReferenceException("Response stream is null.")))
             {
-                return reader.ReadToEnd();
+                var str = reader.ReadToEnd();
+
+                var rawCommits = JsonConvert.DeserializeObject<List<dynamic>>(str);
+
+                return rawCommits;
             }
         }
 
-
-        public static CheckResult ParseUpdates(string commit)
+        public static Result<Commit> CheckUpdates(string compareCommitHash, string branch = "ox_dev")
         {
-            var resultate = new CheckResult();
+            string uri = $"https://api.github.com/repos/xrOxygen/xray-oxygen/commits?sha={branch}";
 
-            dynamic jsonObjRaw = JsonConvert.DeserializeObject(Get("https://api.github.com/repos/xrOxygen/xray-oxygen/commits"));
+            var lastCommit = Get(uri)[0];
+            string lastCommitHash = lastCommit.sha;
 
-            foreach (var objct in jsonObjRaw)
+            if (compareCommitHash.Equals(lastCommitHash, StringComparison.InvariantCulture))
             {
-                Console.WriteLine(objct.sha);
+                return new Result<Commit>
+                {
+                    Data = null,
+                    State = RepoState.UpToDate
+                };
             }
 
-            return resultate;
+            return new Result<Commit>
+            {
+                State = RepoState.NewUpdates,
+                Data = new Commit
+                {
+                    Author = lastCommit.commit.author.name,
+                    Hash = lastCommitHash,
+                    Message = lastCommit.commit.message,
+                    Date = lastCommit.commit.author.date
+                }
+            };
         }
     }
 }
