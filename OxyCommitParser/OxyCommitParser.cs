@@ -46,23 +46,24 @@ namespace OxyCommitParser
             }
         }
 
-        public static Result<Commit> CheckUpdates(string compareCommitHash, string branch = "ox_dev")
+        public static Result<Commit> CheckUpdates(string compareCommitHash = "null", string branch = "ox_dev")
         {
             string uri = $"https://api.github.com/repos/xrOxygen/xray-oxygen/commits?sha={branch}";
+            string uri2 = $"https://api.github.com/repos/xrOxygen/xray-oxygen/commits?sha={compareCommitHash}";
 
-            var lastCommit = Get(uri)[0];
+            var lastCommit = compareCommitHash.Equals("null", StringComparison.InvariantCulture) ? Get(uri)[0] : Get(uri2)[0];
             string lastCommitHash = lastCommit.sha;
 
-            if (compareCommitHash.Equals(lastCommitHash, StringComparison.InvariantCulture))
-            {
-                return new Result<Commit>
-                {
-                    Data = null,
-                    State = RepoState.UpToDate
-                };
-            }
+			//if (compareCommitHash.Equals(lastCommitHash, StringComparison.InvariantCulture))
+			//{
+			//    return new Result<Commit>
+			//    {
+			//        Data = null,
+			//        State = RepoState.UpToDate
+			//    };
+			//}
 
-            return new Result<Commit>
+			return new Result<Commit>
             {
                 State = RepoState.NewUpdates,
                 Data = new Commit
