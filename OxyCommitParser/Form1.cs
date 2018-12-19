@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using System.IO;
 
 namespace OxyCommitParser
 {
 	public partial class Form1 : Form
 	{
+		private string LocalPath;
 		[DllImport("xrCoreWrapper.dll")]
 		private static extern IntPtr GetLocalHash(string ModuleName);
 
@@ -40,6 +42,7 @@ namespace OxyCommitParser
 			this.CommitAuthor.Text = CommitInfo.Data.Author;
 			this.CommitDate.Text = CommitInfo.Data.Date.ToString();
 
+			LocalPath = "";
 		}
 
 		private void button1_Click(object sender, EventArgs e)
@@ -63,7 +66,26 @@ namespace OxyCommitParser
 				this.CurCommitDate.Visible = true;
 				this.CurSysCommitAuthorText.Visible = true;
 				this.CurSysCommitDate.Visible = true;
+
+				// Load dumps list
+				var FoldersList = openFileDialog1.FileName.Split('\\');
+
+				for (Int32 It = 0; It < FoldersList.Length - 2; It++)
+				{
+					LocalPath += FoldersList[It] + "\\";
+				}
+
+				string UserDataPath = LocalPath + "\\userdata\\dumps\\";
+				foreach (string file_name in Directory.GetFiles(UserDataPath))
+					listBox1.Items.Add(file_name.Substring(UserDataPath.Length + 13).Replace('_', ' '));
+
+				this.IsDumpList.Visible = true;
 			}
+		}
+
+		private void IsDumpList_CheckedChanged(object sender, EventArgs e)
+		{
+			listBox1.Visible = this.IsDumpList.Checked;
 		}
 	}
 }

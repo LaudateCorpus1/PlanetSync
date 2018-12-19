@@ -36,13 +36,15 @@
 			this.CommitText = new System.Windows.Forms.Label();
 			this.SysCommitAuthorText = new System.Windows.Forms.Label();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
+			this.button1 = new System.Windows.Forms.Button();
 			this.CurCommitDate = new System.Windows.Forms.Label();
 			this.CurSysCommitDate = new System.Windows.Forms.Label();
 			this.CurCommitAuthor = new System.Windows.Forms.Label();
 			this.CurCommitMsg = new System.Windows.Forms.Label();
 			this.CurSysCommitAuthorText = new System.Windows.Forms.Label();
-			this.button1 = new System.Windows.Forms.Button();
 			this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+			this.listBox1 = new System.Windows.Forms.ListBox();
+			this.IsDumpList = new System.Windows.Forms.CheckBox();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.SuspendLayout();
@@ -143,6 +145,18 @@
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "Current ver  ";
 			// 
+			// button1
+			// 
+			this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+			this.button1.ForeColor = System.Drawing.SystemColors.ButtonFace;
+			this.button1.Location = new System.Drawing.Point(142, 43);
+			this.button1.Name = "button1";
+			this.button1.Size = new System.Drawing.Size(75, 23);
+			this.button1.TabIndex = 5;
+			this.button1.Text = "Check";
+			this.button1.UseVisualStyleBackColor = true;
+			this.button1.Click += new System.EventHandler(this.button1_Click);
+			// 
 			// CurCommitDate
 			// 
 			this.CurCommitDate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -207,21 +221,32 @@
 			this.CurSysCommitAuthorText.Text = "Author:";
 			this.CurSysCommitAuthorText.Visible = false;
 			// 
-			// button1
-			// 
-			this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-			this.button1.ForeColor = System.Drawing.SystemColors.ButtonFace;
-			this.button1.Location = new System.Drawing.Point(142, 43);
-			this.button1.Name = "button1";
-			this.button1.Size = new System.Drawing.Size(75, 23);
-			this.button1.TabIndex = 5;
-			this.button1.Text = "Check";
-			this.button1.UseVisualStyleBackColor = true;
-			this.button1.Click += new System.EventHandler(this.button1_Click);
-			// 
 			// openFileDialog1
 			// 
 			this.openFileDialog1.FileName = "openFileDialog1";
+			// 
+			// listBox1
+			// 
+			this.listBox1.FormattingEnabled = true;
+			this.listBox1.Location = new System.Drawing.Point(607, 242);
+			this.listBox1.Name = "listBox1";
+			this.listBox1.Size = new System.Drawing.Size(400, 264);
+			this.listBox1.TabIndex = 6;
+			this.listBox1.Visible = false;
+			// 
+			// IsDumpList
+			// 
+			this.IsDumpList.AutoSize = true;
+			this.IsDumpList.BackColor = System.Drawing.Color.Transparent;
+			this.IsDumpList.ForeColor = System.Drawing.SystemColors.ButtonFace;
+			this.IsDumpList.Location = new System.Drawing.Point(13, 13);
+			this.IsDumpList.Name = "IsDumpList";
+			this.IsDumpList.Size = new System.Drawing.Size(78, 17);
+			this.IsDumpList.TabIndex = 7;
+			this.IsDumpList.Text = "Dumps List";
+			this.IsDumpList.UseVisualStyleBackColor = false;
+			this.IsDumpList.Visible = false;
+			this.IsDumpList.CheckedChanged += new System.EventHandler(this.IsDumpList_CheckedChanged);
 			// 
 			// Form1
 			// 
@@ -230,6 +255,8 @@
 			this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
 			this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
 			this.ClientSize = new System.Drawing.Size(1008, 511);
+			this.Controls.Add(this.IsDumpList);
+			this.Controls.Add(this.listBox1);
 			this.Controls.Add(this.groupBox2);
 			this.Controls.Add(this.groupBox1);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
@@ -240,6 +267,7 @@
 			this.groupBox2.ResumeLayout(false);
 			this.groupBox2.PerformLayout();
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 
@@ -259,5 +287,7 @@
 		private System.Windows.Forms.Label CurSysCommitAuthorText;
 		private System.Windows.Forms.Button button1;
 		private System.Windows.Forms.OpenFileDialog openFileDialog1;
+		private System.Windows.Forms.ListBox listBox1;
+		private System.Windows.Forms.CheckBox IsDumpList;
 	}
 }
