@@ -64,7 +64,7 @@ namespace OxyCommitParser
 
             var lastCommit = compareCommitHash.Equals("null", StringComparison.InvariantCulture) ? Get(uri)[0] : Get(uri2)[0];
 
-            if (lastCommit = null)
+            if (lastCommit == null)
                 return new Result()
                 {
                     State = RepoState.Error,
