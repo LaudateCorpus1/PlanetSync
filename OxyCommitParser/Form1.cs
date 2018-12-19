@@ -51,8 +51,8 @@ namespace OxyCommitParser
 			{
 				this.button1.Visible = false;
 				IntPtr CurrHash = GetLocalHash(openFileDialog1.FileName);
-				string CURRENT_COMMIT = Marshal.PtrToStringAnsi(CurrHash); //614be6d36f477349f766fb69a1bf9671e3241a58";
-				var CurCommitInfo = OxyCommitParser.CheckUpdates(CURRENT_COMMIT);
+				string currentCommitHash = Marshal.PtrToStringAnsi(CurrHash); //614be6d36f477349f766fb69a1bf9671e3241a58";
+				var CurCommitInfo = OxyCommitParser.CheckUpdates(currentCommitHash);
 
 				this.CurCommitMsg.Text = HelperTextGen(CurCommitInfo.Data.Message);
 				this.CurCommitAuthor.Text = CurCommitInfo.Data.Author;
