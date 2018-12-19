@@ -54,14 +54,14 @@ namespace OxyCommitParser
             var lastCommit = compareCommitHash.Equals("null", StringComparison.InvariantCulture) ? Get(uri)[0] : Get(uri2)[0];
             string lastCommitHash = lastCommit.sha;
 
-			//if (compareCommitHash.Equals(lastCommitHash, StringComparison.InvariantCulture))
-			//{
-			//    return new Result<Commit>
-			//    {
-			//        Data = null,
-			//        State = RepoState.UpToDate
-			//    };
-			//}
+			if (compareCommitHash.Equals(lastCommitHash, StringComparison.InvariantCulture))
+			{
+			    return new Result<Commit>
+			    {
+			        State = RepoState.UpToDate,
+			        Data = null
+			    };
+			}
 
 			return new Result<Commit>
             {
