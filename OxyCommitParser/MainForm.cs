@@ -99,63 +99,63 @@ namespace OxyCommitParser
             }
             catch (ENoCore e)
             {
-                lcommitText.Text = e.Message;
-                lcommitDate.Text = DateTime.Now.ToString();
-                lcommitAuthor.Text = "";
+                this.lcommitText.Text = e.Message;
+                this.lcommitDate.Text = DateTime.Now.ToString();
+				this.lcommitAuthor.Text = "";
             }
             catch (ENoEntryPoint e)
             {
-                lcommitText.Text = e.Message;
-                lcommitDate.Text = DateTime.Now.ToString();
-                lcommitAuthor.Text = "";
+                this.lcommitText.Text = e.Message;
+                this.lcommitDate.Text = DateTime.Now.ToString();
+				this.lcommitAuthor.Text = "";
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                lcommitDate.Text = DateTime.Now.ToString();
-                lcommitAuthor.Text = "";
+                this.lcommitDate.Text = DateTime.Now.ToString();
+				this.lcommitAuthor.Text = "";
             }
 
-            if (localHash != "")
+			GithubRelease LocalReleaseInfo = null;
+			Result LocalCommitInfo = null;
+			if (localHash != "")
             {
-                // Getting info for local commit from GitHub
-                GithubRelease local = Utils.GetRemoteRelease(localHash);
-                if (local == null)
+				// Getting info for local commit from GitHub
+				LocalReleaseInfo = Utils.GetRemoteRelease(localHash);
+                if (LocalReleaseInfo == null)
                 {
-					var CurCommitInfo = OxyCommitParser.CheckUpdates(localHash);
-
-					this.lcommitText.Text = HelperTextGen(CurCommitInfo.Data.Message);
-					this.lcommitDate.Text = CurCommitInfo.Data.Date.ToString();
-					this.lcommitAuthor.Text = CurCommitInfo.Data.Author;
-
-					//lcommitText.Text = $"Release not found =( {Environment.NewLine} Developer version?";
-                    //lcommitDate.Text = DateTime.Now.ToString();
-                    //lcommitAuthor.Text = "";
-                }
+					LocalCommitInfo = OxyCommitParser.CheckUpdates(localHash);
+					this.lcommitText.Text = HelperTextGen(LocalCommitInfo.Data.Message);
+					this.lcommitDate.Text = LocalCommitInfo.Data.Date.ToString();
+					this.lcommitAuthor.Text = LocalCommitInfo.Data.Author;
+					this.lcommiteeAvatar.LoadAsync(LocalCommitInfo.Data.Avatar);
+				}
                 else
                 {
-                    lcommiteeAvatar.LoadAsync(local.author.avatar_url);
-                    gbLocal.Text = local.name;
-                    lcommitAuthor.Text = local.author.login;
-                    lcommitText.Text = String.IsNullOrWhiteSpace(local.body) ? "No description available" : local.body.Replace("\r\n", Environment.NewLine);
-                    lcommitDate.Text = local.published_at.ToString();
+                    this.lcommiteeAvatar.LoadAsync(LocalReleaseInfo.author.avatar_url);
+                    this.gbLocal.Text = LocalReleaseInfo.name;
+                    this.lcommitAuthor.Text = LocalReleaseInfo.author.login;
+                    this.lcommitText.Text = String.IsNullOrWhiteSpace(LocalReleaseInfo.body) ? "No description available" : LocalReleaseInfo.body.Replace("\r\n", Environment.NewLine);
+					this.lcommitDate.Text = LocalReleaseInfo.published_at.ToString();
                 }
             }
 
             // Getting latest release...
             GithubRelease latest = Utils.GetRemoteRelease();
 
-            rcommiteeAvatar.LoadAsync(latest.author.avatar_url);
-            gbRemote.Text = latest.name;
-            rcommitAuthor.Text = latest.author.login;
-            rcommitText.Text = String.IsNullOrWhiteSpace(latest.body) ? "No description available" : latest.body.Replace("\r\n", Environment.NewLine);
-            rcommitDate.Text = latest.published_at.ToString();
+            this.rcommiteeAvatar.LoadAsync(latest.author.avatar_url);
+            this.LastReleaseName.Text = latest.name;
+            this.rcommitAuthor.Text = latest.author.login;
+            this.rcommitText.Text = String.IsNullOrWhiteSpace(latest.body) ? "No description available" : latest.body.Replace("\r\n", Environment.NewLine);
+            this.rcommitDate.Text = latest.published_at.ToString();
 
             isUpToDate = latest.target_commitish.StartsWith(localHash);
 
             // Ask for update if not up to date...
             if (isUpToDate) return;
             if (latest.assets.Length == 0) return;
+			if (LocalReleaseInfo != null && latest.published_at < LocalReleaseInfo.published_at) return;
+			if (LocalCommitInfo != null) return;
             if (MessageBox.Show("Update to recent release?", "Update", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
                 return;
 

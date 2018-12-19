@@ -123,28 +123,6 @@ namespace OxyCommitParser
         }
     }
 
-	internal class Commit
-	{
-		public string Hash { get; set; }
-		public string Author { get; set; }
-		public string Message { get; set; }
-		public DateTime Date { get; set; }
-	}
-
-	internal class Result
-	{
-		internal enum RepoState
-		{
-			UpToDate,
-			NewUpdates,
-
-			Error
-		}
-
-		public RepoState State;
-		public Commit Data;
-	}
-
 	static class OxyCommitParser
 	{
 		private static List<dynamic> Get(string uri)
@@ -171,7 +149,6 @@ namespace OxyCommitParser
 			{
 				return null;
 			}
-
 		}
 
 		public static Result CheckUpdates(string compareCommitHash = "null", string branch = "ox_dev")
@@ -193,10 +170,11 @@ namespace OxyCommitParser
 			return new Result
 			{
 				State = Result.RepoState.NewUpdates,
-				Data = new Commit
+				Data = new GitHubCommit
 				{
 					Author = lastCommit.commit.author.name,
 					Hash = lastCommitHash,
+					Avatar = lastCommit.author.avatar_url,
 					Message = lastCommit.commit.message,
 					Date = DateTime.Parse(lastCommit.commit.author.date.ToString())
 				}

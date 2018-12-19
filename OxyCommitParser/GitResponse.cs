@@ -88,4 +88,27 @@ namespace OxyCommitParser
         public string type { get; set; }
         public bool site_admin { get; set; }
     }
+
+	internal class GitHubCommit
+	{
+		public string Avatar { get; set; }
+		public string Hash { get; set; }
+		public string Author { get; set; }
+		public string Message { get; set; }
+		public DateTime Date { get; set; }
+	}
+
+	internal class Result
+	{
+		internal enum RepoState
+		{
+			UpToDate,
+			NewUpdates,
+
+			Error
+		}
+
+		public RepoState State;
+		public GitHubCommit Data;
+	}
 }
