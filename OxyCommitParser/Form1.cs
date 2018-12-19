@@ -6,7 +6,7 @@ namespace OxyCommitParser
 {
 	public partial class Form1 : Form
 	{
-		[System.Runtime.InteropServices.DllImport("xrCoreWrapper.dll")]
+		[DllImport("xrCoreWrapper.dll")]
 		private static extern IntPtr GetLocalHash(string ModuleName);
 
 		private string HelperTextGen(string text)
@@ -51,7 +51,7 @@ namespace OxyCommitParser
 			{
 				this.button1.Visible = false;
 				IntPtr CurrHash = GetLocalHash(openFileDialog1.FileName);
-				string currentCommitHash = Marshal.PtrToStringAnsi(CurrHash); //614be6d36f477349f766fb69a1bf9671e3241a58";
+				string currentCommitHash = Marshal.PtrToStringAnsi(CurrHash);
 				var CurCommitInfo = OxyCommitParser.CheckUpdates(currentCommitHash);
 
 				this.CurCommitMsg.Text = HelperTextGen(CurCommitInfo.Data.Message);
