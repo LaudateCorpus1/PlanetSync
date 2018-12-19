@@ -1,69 +1,66 @@
 ﻿using System;
-using System.Windows.Forms;
-using System.Runtime.InteropServices;
-using System.Net;
-using SevenZipExtractor;
 using System.ComponentModel;
+using System.IO;
+using System.Net;
+using System.Windows.Forms;
+using SevenZipExtractor;
 
 namespace OxyCommitParser
 {
-	public partial class MainForm : Form
+    public partial class MainForm : Form
 	{
         string corePath = "";
         string tempDir = "";
         string tempFile = "";
 
-        public MainForm()
-		{
-			InitializeComponent();
-		}
+        public MainForm() => InitializeComponent();
 
-		private string HelperTextGen(string text)
+	    private string HelperTextGen(string text)
 		{
-			string NewCommitMessage = "";
+			string newCommitMessage = "";
+
 			try
 			{
-				var CommitMsg = text.Split('\n');
+				var commitMsg = text.Split('\n');
 
-				for (int i = 0; i < CommitMsg.Length; i++)
+				for (int i = 0; i < commitMsg.Length; i++)
 				{
-					if (CommitMsg[i].Length > 78)
+					if (commitMsg[i].Length > 78)
 					{
-						CommitMsg[i] = CommitMsg[i].Substring(0, 75) + "-\n          " + CommitMsg[i].Substring(76);
+						commitMsg[i] = commitMsg[i].Substring(0, 75) + "-\n          " + commitMsg[i].Substring(76);
 					}
-					NewCommitMessage += CommitMsg[i] + "\n";
+					newCommitMessage += commitMsg[i] + "\n";
 				}
 			}
 			catch (Exception)
 			{
-				NewCommitMessage = text;
+				newCommitMessage = text;
 			}
-			return NewCommitMessage;
+
+			return newCommitMessage;
 		}
 
-		void wc_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
-        {
-            pbUpdate.Value = e.ProgressPercentage;
-        }
+		void wc_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e) 
+		    => pbUpdate.Value = e.ProgressPercentage;
 
-        private void wc_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
+	    private void wc_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
             pbUpdate.Visible = false;
             pbUpdate.Value = 0;
 
-            string coreFolder = System.IO.Path.GetDirectoryName(corePath);
-            coreFolder = System.IO.Path.GetFullPath(System.IO.Path.Combine(coreFolder, @"..\"));
+            string coreFolder = Path.GetDirectoryName(corePath);
+            coreFolder = Path.GetFullPath(Path.Combine(coreFolder, @"..\"));
 
             using (ArchiveFile archiveFile = new ArchiveFile(tempFile))
             {
                 archiveFile.Extract(tempDir);
             }
 
-            tempDir = System.IO.Path.GetFullPath(System.IO.Path.Combine(tempDir, @"game\"));
+            tempDir = Path.GetFullPath(Path.Combine(tempDir, @"game\"));
 
             Utils.CopyFolder(tempDir, coreFolder);
 
-            System.IO.File.Delete(tempFile);
+            File.Delete(tempFile);
 
             Application.Restart();
         }
@@ -85,39 +82,36 @@ namespace OxyCommitParser
             // Looking for xrCore...
             corePath = "xrCore.dll";
             bool isUpToDate = false;
-            if (!System.IO.File.Exists(corePath))
+            if (!File.Exists(corePath))
             {
                 if (searchCoreDialog.ShowDialog() != DialogResult.OK) return;
                 corePath = searchCoreDialog.FileName;
             }
 
             // Retrieving local commit info...
-            string localHash = "";
+            string localHash = string.Empty;
+
             try
             {
                 localHash = Utils.GetReleaseHash(corePath);
             }
-            catch (ENoCore e)
+
+            catch (Exception ex) when (ex is ENoCore || ex is ENoEntryPoint)
             {
-                this.lcommitText.Text = e.Message;
-                this.lcommitDate.Text = DateTime.Now.ToString();
-				this.lcommitAuthor.Text = "";
-            }
-            catch (ENoEntryPoint e)
-            {
-                this.lcommitText.Text = e.Message;
-                this.lcommitDate.Text = DateTime.Now.ToString();
-				this.lcommitAuthor.Text = "";
+                lcommitText.Text = ex.Message;
+                lcommitDate.Text = DateTime.Now.ToString();
+                lcommitAuthor.Text = "";
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                this.lcommitDate.Text = DateTime.Now.ToString();
-				this.lcommitAuthor.Text = "";
+                lcommitDate.Text = DateTime.Now.ToString();
+				lcommitAuthor.Text = "";
             }
 
 			GithubRelease LocalReleaseInfo = null;
 			Result LocalCommitInfo = null;
+
 			if (localHash != "")
             {
 				// Getting info for local commit from GitHub
@@ -125,29 +119,29 @@ namespace OxyCommitParser
                 if (LocalReleaseInfo == null)
                 {
 					LocalCommitInfo = OxyCommitParser.CheckUpdates(localHash);
-					this.lcommitText.Text = HelperTextGen(LocalCommitInfo.Data.Message);
-					this.lcommitDate.Text = LocalCommitInfo.Data.Date.ToString();
-					this.lcommitAuthor.Text = LocalCommitInfo.Data.Author;
-					this.lcommiteeAvatar.LoadAsync(LocalCommitInfo.Data.Avatar);
+					lcommitText.Text = HelperTextGen(LocalCommitInfo.Data.Message);
+					lcommitDate.Text = LocalCommitInfo.Data.Date.ToString();
+					lcommitAuthor.Text = LocalCommitInfo.Data.Author;
+					lcommiteeAvatar.LoadAsync(LocalCommitInfo.Data.Avatar);
 				}
                 else
                 {
-                    this.lcommiteeAvatar.LoadAsync(LocalReleaseInfo.author.avatar_url);
-                    this.gbLocal.Text = LocalReleaseInfo.name;
-                    this.lcommitAuthor.Text = LocalReleaseInfo.author.login;
-                    this.lcommitText.Text = String.IsNullOrWhiteSpace(LocalReleaseInfo.body) ? "No description available" : LocalReleaseInfo.body.Replace("\r\n", Environment.NewLine);
-					this.lcommitDate.Text = LocalReleaseInfo.published_at.ToString();
+                    lcommiteeAvatar.LoadAsync(LocalReleaseInfo.author.avatar_url);
+                    gbLocal.Text = LocalReleaseInfo.name;
+                    lcommitAuthor.Text = LocalReleaseInfo.author.login;
+                    lcommitText.Text = String.IsNullOrWhiteSpace(LocalReleaseInfo.body) ? "No description available" : LocalReleaseInfo.body.Replace("\r\n", Environment.NewLine);
+					lcommitDate.Text = LocalReleaseInfo.published_at.ToString();
                 }
             }
 
             // Getting latest release...
             GithubRelease latest = Utils.GetRemoteRelease();
 
-            this.rcommiteeAvatar.LoadAsync(latest.author.avatar_url);
-            this.LastReleaseName.Text = latest.name;
-            this.rcommitAuthor.Text = latest.author.login;
-            this.rcommitText.Text = String.IsNullOrWhiteSpace(latest.body) ? "No description available" : latest.body.Replace("\r\n", Environment.NewLine);
-            this.rcommitDate.Text = latest.published_at.ToString();
+            rcommiteeAvatar.LoadAsync(latest.author.avatar_url);
+            LastReleaseName.Text = latest.name;
+            rcommitAuthor.Text = latest.author.login;
+            rcommitText.Text = String.IsNullOrWhiteSpace(latest.body) ? "No description available" : latest.body.Replace("\r\n", Environment.NewLine);
+            rcommitDate.Text = latest.published_at.ToString();
 
             isUpToDate = latest.target_commitish.StartsWith(localHash);
 
@@ -177,7 +171,7 @@ namespace OxyCommitParser
             }
 
             // Prepare...
-            tempFile = System.IO.Path.GetTempPath();
+            tempFile = Path.GetTempPath();
             if (tempFile.EndsWith("\\") == false)
             {
                 tempFile += "\\";
