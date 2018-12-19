@@ -9,7 +9,9 @@ namespace OxyCommitParser
     internal enum RepoState
     {
         UpToDate,
-        NewUpdates
+        NewUpdates,
+
+        Error
     }
 
     internal class Commit
@@ -20,10 +22,10 @@ namespace OxyCommitParser
         public DateTime Date { get; set; }
     }
 
-    internal class Result<T>
+    internal class Result
     {
         public RepoState State;
-        public T Data;
+        public Commit Data;
     }
 
     static class OxyCommitParser
@@ -34,36 +36,53 @@ namespace OxyCommitParser
             request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             request.UserAgent = "OxyCommitParser";
 
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-            using (Stream stream = response.GetResponseStream())
-            using (StreamReader reader = new StreamReader(stream ?? throw new NullReferenceException("Response stream is null.")))
+            try
             {
-                var str = reader.ReadToEnd();
+                using (HttpWebResponse response = (HttpWebResponse) request.GetResponse())
+                using (Stream stream = response.GetResponseStream())
+                using (StreamReader reader =
+                    new StreamReader(stream ?? throw new NullReferenceException("Response stream is null.")))
+                {
+                    var str = reader.ReadToEnd();
 
-                var rawCommits = JsonConvert.DeserializeObject<List<dynamic>>(str);
+                    var rawCommits = JsonConvert.DeserializeObject<List<dynamic>>(str);
 
-                return rawCommits;
+                    return rawCommits;
+                }
             }
+            catch (WebException)
+            {
+                return null;
+            }
+
         }
 
-        public static Result<Commit> CheckUpdates(string compareCommitHash = "null", string branch = "ox_dev")
+        public static Result CheckUpdates(string compareCommitHash = "null", string branch = "ox_dev")
         {
             string uri = $"https://api.github.com/repos/xrOxygen/xray-oxygen/commits?sha={branch}";
             string uri2 = $"https://api.github.com/repos/xrOxygen/xray-oxygen/commits?sha={compareCommitHash}";
 
             var lastCommit = compareCommitHash.Equals("null", StringComparison.InvariantCulture) ? Get(uri)[0] : Get(uri2)[0];
+
+            if (lastCommit = null)
+                return new Result()
+                {
+                    State = RepoState.Error,
+                    Data = null
+                };
+
             string lastCommitHash = lastCommit.sha;
 
 			if (compareCommitHash.Equals(lastCommitHash, StringComparison.InvariantCulture))
 			{
-			    return new Result<Commit>
+			    return new Result
 			    {
 			        State = RepoState.UpToDate,
 			        Data = null
 			    };
 			}
 
-			return new Result<Commit>
+			return new Result
             {
                 State = RepoState.NewUpdates,
                 Data = new Commit

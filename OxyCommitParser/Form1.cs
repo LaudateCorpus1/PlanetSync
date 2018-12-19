@@ -25,7 +25,7 @@ namespace OxyCommitParser
 					NewCommitMessage += CommitMsg[i] + "\n";
 				}
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				NewCommitMessage = text;
 			}
