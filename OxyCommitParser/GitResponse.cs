@@ -1,114 +1,77 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace OxyCommitParser
 {
-    public class GithubRelease
+    internal class Release
     {
-        public string url { get; set; }
-        public string assets_url { get; set; }
-        public string upload_url { get; set; }
-        public string html_url { get; set; }
-        public int id { get; set; }
-        public string node_id { get; set; }
-        public string tag_name { get; set; }
-        public string target_commitish { get; set; }
-        public string name { get; set; }
-        public bool draft { get; set; }
-        public Author author { get; set; }
-        public bool prerelease { get; set; }
-        public DateTime created_at { get; set; }
-        public DateTime published_at { get; set; }
-        public Asset[] assets { get; set; }
-        public string tarball_url { get; set; }
-        public string zipball_url { get; set; }
-        public string body { get; set; }
+        [JsonProperty(PropertyName = "name")]
+        public string Name { get; set; }
+
+        [JsonProperty(PropertyName = "published_at")]
+        public DateTime PublishedDate { get; set; }
+
+        [JsonProperty(PropertyName = "author")]
+        public Author Author { get; set; }
+
+        [JsonProperty(PropertyName = "target_commitish")]
+        public string Hash { get; set; }
+
+        [JsonProperty(PropertyName = "body")]
+        public string Message { get; set; }
+
+        [JsonProperty(PropertyName = "assets")]
+        public Asset[] Assets { get; set; }
+    }
+
+    internal class Commit
+    {
+        public string Hash { get; }
+        public Author Author { get;  }
+        public string Message { get; }
+        public DateTime Date { get; }
+
+        public Commit(dynamic rawCommit)
+        {
+            Hash = rawCommit.sha;
+            Author = new Author(rawCommit.author);
+            Date = DateTime.Parse(rawCommit.commit.author.date.ToString());
+            Message = rawCommit.commit.message;
+        }
     }
 
     public class Author
     {
-        public string login { get; set; }
-        public int id { get; set; }
-        public string node_id { get; set; }
-        public string avatar_url { get; set; }
-        public string gravatar_id { get; set; }
-        public string url { get; set; }
-        public string html_url { get; set; }
-        public string followers_url { get; set; }
-        public string following_url { get; set; }
-        public string gists_url { get; set; }
-        public string starred_url { get; set; }
-        public string subscriptions_url { get; set; }
-        public string organizations_url { get; set; }
-        public string repos_url { get; set; }
-        public string events_url { get; set; }
-        public string received_events_url { get; set; }
-        public string type { get; set; }
-        public bool site_admin { get; set; }
+        [JsonProperty(PropertyName = "login")]
+        public string Login { get; set; }
+        [JsonProperty(PropertyName = "avatar_url")]
+        public string Avatar { get; set; }
+
+        public Author() { }
+
+        public Author(dynamic rawAuthor)
+        {
+            Login = rawAuthor.login;
+            Avatar = rawAuthor.avatar_url;
+        }
     }
 
     public class Asset
     {
-        public string url { get; set; }
-        public int id { get; set; }
-        public string node_id { get; set; }
-        public string name { get; set; }
-        public string label { get; set; }
-        public Uploader uploader { get; set; }
-        public string content_type { get; set; }
-        public string state { get; set; }
-        public int size { get; set; }
-        public int download_count { get; set; }
-        public DateTime created_at { get; set; }
-        public DateTime updated_at { get; set; }
-        public string browser_download_url { get; set; }
+        [JsonProperty(PropertyName = "browser_download_url")]
+        public string Url { get; set; }
     }
 
-    public class Uploader
-    {
-        public string login { get; set; }
-        public int id { get; set; }
-        public string node_id { get; set; }
-        public string avatar_url { get; set; }
-        public string gravatar_id { get; set; }
-        public string url { get; set; }
-        public string html_url { get; set; }
-        public string followers_url { get; set; }
-        public string following_url { get; set; }
-        public string gists_url { get; set; }
-        public string starred_url { get; set; }
-        public string subscriptions_url { get; set; }
-        public string organizations_url { get; set; }
-        public string repos_url { get; set; }
-        public string events_url { get; set; }
-        public string received_events_url { get; set; }
-        public string type { get; set; }
-        public bool site_admin { get; set; }
-    }
+	//internal class Result
+	//{
+	//	internal enum RepoState
+	//	{
+	//		UpToDate,
+	//		NewUpdates,
+	//		Error
+	//	}
 
-	internal class GitHubCommit
-	{
-		public string Avatar { get; set; }
-		public string Hash { get; set; }
-		public string Author { get; set; }
-		public string Message { get; set; }
-		public DateTime Date { get; set; }
-	}
-
-	internal class Result
-	{
-		internal enum RepoState
-		{
-			UpToDate,
-			NewUpdates,
-
-			Error
-		}
-
-		public RepoState State;
-		public GitHubCommit Data;
-	}
+	//	public RepoState State;
+	//	public Commit Data;
+	//}
 }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Windows.Forms;
 using SevenZipExtractor;
@@ -9,9 +11,9 @@ namespace OxyCommitParser
 {
     public partial class MainForm : Form
 	{
-        string corePath = "";
-        string tempDir = "";
-        string tempFile = "";
+        string _corePath = "";
+        string _tempDir = "";
+        string _tempFile = "";
 
         public MainForm() => InitializeComponent();
 
@@ -48,19 +50,19 @@ namespace OxyCommitParser
             pbUpdate.Visible = false;
             pbUpdate.Value = 0;
 
-            string coreFolder = Path.GetDirectoryName(corePath);
+            string coreFolder = Path.GetDirectoryName(_corePath);
             coreFolder = Path.GetFullPath(Path.Combine(coreFolder, @"..\"));
 
-            using (ArchiveFile archiveFile = new ArchiveFile(tempFile))
+            using (ArchiveFile archiveFile = new ArchiveFile(_tempFile))
             {
-                archiveFile.Extract(tempDir);
+                archiveFile.Extract(_tempDir);
             }
 
-            tempDir = Path.GetFullPath(Path.Combine(tempDir, @"game\"));
+            _tempDir = Path.GetFullPath(Path.Combine(_tempDir, @"game\"));
 
-            Utils.CopyFolder(tempDir, coreFolder);
+            Utils.CopyFolder(_tempDir, coreFolder);
 
-            File.Delete(tempFile);
+            File.Delete(_tempFile);
 
             Application.Restart();
         }
@@ -80,12 +82,12 @@ namespace OxyCommitParser
         private void MainForm_Shown(object sender, EventArgs ea)
         {
             // Looking for xrCore...
-            corePath = "xrCore.dll";
-            bool isUpToDate = false;
-            if (!File.Exists(corePath))
+            _corePath = "xrCore.dll";
+
+            if (!File.Exists(_corePath))
             {
                 if (searchCoreDialog.ShowDialog() != DialogResult.OK) return;
-                corePath = searchCoreDialog.FileName;
+                _corePath = searchCoreDialog.FileName;
             }
 
             // Retrieving local commit info...
@@ -93,7 +95,7 @@ namespace OxyCommitParser
 
             try
             {
-                localHash = Utils.GetReleaseHash(corePath);
+                localHash = Utils.GetLocalReleaseHash(_corePath);
             }
 
             catch (Exception ex) when (ex is ENoCore || ex is ENoEntryPoint)
@@ -109,82 +111,92 @@ namespace OxyCommitParser
 				lcommitAuthor.Text = "";
             }
 
-			GithubRelease LocalReleaseInfo = null;
-			Result LocalCommitInfo = null;
+			Release localReleaseInfo = null;
+			Commit localCommitInfo = null;
 
-			if (localHash != "")
-            {
-				// Getting info for local commit from GitHub
-				LocalReleaseInfo = Utils.GetRemoteRelease(localHash);
-                if (LocalReleaseInfo == null)
-                {
-					LocalCommitInfo = OxyCommitParser.CheckUpdates(localHash);
-					lcommitText.Text = HelperTextGen(LocalCommitInfo.Data.Message);
-					lcommitDate.Text = LocalCommitInfo.Data.Date.ToString();
-					lcommitAuthor.Text = LocalCommitInfo.Data.Author;
-					lcommiteeAvatar.LoadAsync(LocalCommitInfo.Data.Avatar);
-				}
-                else
-                {
-                    lcommiteeAvatar.LoadAsync(LocalReleaseInfo.author.avatar_url);
-                    gbLocal.Text = LocalReleaseInfo.name;
-                    lcommitAuthor.Text = LocalReleaseInfo.author.login;
-                    lcommitText.Text = String.IsNullOrWhiteSpace(LocalReleaseInfo.body) ? "No description available" : LocalReleaseInfo.body.Replace("\r\n", Environment.NewLine);
-					lcommitDate.Text = LocalReleaseInfo.published_at.ToString();
-                }
-            }
+			if (!string.IsNullOrEmpty(localHash))
+			{
+			    // Getting info for local release from GitHub
+
+				localReleaseInfo = Utils.GetReleaseByHash(localHash);
+
+			    if (localReleaseInfo != default(Release))
+			    {
+			        gbLocal.Text = localReleaseInfo.Name;
+
+			        lcommitText.Text = string.IsNullOrWhiteSpace(localReleaseInfo.Message)
+			            ? "No description available"
+			            : localReleaseInfo.Message.Replace("\r\n", Environment.NewLine);
+
+			        lcommitDate.Text = localReleaseInfo.PublishedDate.ToString(CultureInfo.InvariantCulture);
+			        lcommitAuthor.Text = localReleaseInfo.Author.Login;
+			        lcommiteeAvatar.LoadAsync(localReleaseInfo.Author.Avatar);
+			    }
+			    else
+			    {
+                    // get info about release commit, if didn't find in releases 
+
+			        localCommitInfo = OxyCommitParser.GetCommitByHash(localHash);
+
+			        lcommitText.Text = HelperTextGen(localCommitInfo.Message);
+			        lcommitDate.Text = localCommitInfo.Date.ToString(CultureInfo.InvariantCulture);
+			        lcommitAuthor.Text = localCommitInfo.Author.Login;
+			        lcommiteeAvatar.LoadAsync(localCommitInfo.Author.Avatar);
+			    }
+			}
 
             // Getting latest release...
-            GithubRelease latest = Utils.GetRemoteRelease();
 
-            rcommiteeAvatar.LoadAsync(latest.author.avatar_url);
-            LastReleaseName.Text = latest.name;
-            rcommitAuthor.Text = latest.author.login;
-            rcommitText.Text = String.IsNullOrWhiteSpace(latest.body) ? "No description available" : latest.body.Replace("\r\n", Environment.NewLine);
-            rcommitDate.Text = latest.published_at.ToString();
+            Release latestRelease = Utils.GetLatestRelease();
 
-            isUpToDate = latest.target_commitish.StartsWith(localHash);
+            rcommiteeAvatar.LoadAsync(latestRelease.Author.Avatar);
+            LastReleaseName.Text = latestRelease.Name;
+            rcommitAuthor.Text = latestRelease.Author.Login;
+            rcommitText.Text = string.IsNullOrWhiteSpace(latestRelease.Message) 
+                ? "No description available" 
+                : latestRelease.Message.Replace("\r\n", Environment.NewLine);
+            rcommitDate.Text = latestRelease.PublishedDate.ToString(CultureInfo.InvariantCulture);
+
+            bool isUpToDate = latestRelease.Hash.StartsWith(localHash);
 
             // Ask for update if not up to date...
-            if (isUpToDate) return;
-            if (latest.assets.Length == 0) return;
-			if (LocalReleaseInfo != null && latest.published_at < LocalReleaseInfo.published_at) return;
-			if (LocalCommitInfo != null) return;
-            if (MessageBox.Show("Update to recent release?", "Update", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+
+            if (isUpToDate ||
+                latestRelease.Assets.Length == 0 ||
+                localReleaseInfo != null && latestRelease.PublishedDate < localReleaseInfo.PublishedDate ||
+                localCommitInfo != null)
+                return;
+
+            if (MessageBox.Show("Update to recent release?", "Update", MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question) == DialogResult.No)
                 return;
 
             // Do download...
-            Asset downloadableAsset = null;
-            foreach (Asset item in latest.assets)
-            {
-                if (item.browser_download_url.EndsWith(".zip") || item.browser_download_url.EndsWith(".7z"))
-                {
-                    downloadableAsset = item;
-                    break;
-                }
-            }
 
-            if (downloadableAsset == null)
+            var asset =
+                latestRelease.Assets.FirstOrDefault(ast => ast.Url.EndsWith(".zip") || ast.Url.EndsWith(".7z"));
+
+            if (asset == default(Asset))
             {
                 rcommitText.Text = "Unable to find release zip file!";
                 return;
             }
 
             // Prepare...
-            tempFile = Path.GetTempPath();
-            if (tempFile.EndsWith("\\") == false)
+            _tempFile = Path.GetTempPath();
+            if (_tempFile.EndsWith("\\") == false)
             {
-                tempFile += "\\";
+                _tempFile += "\\";
             }
 
-            string unixTimeNow = ((Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds).ToString();
-            tempDir = $"{tempFile}oxy_{unixTimeNow}\\";
-            string[] parts = downloadableAsset.browser_download_url.Split('.');
+            string unixTimeNow = ((int) (DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds).ToString();
+            _tempDir = $"{_tempFile}oxy_{unixTimeNow}\\";
+            string[] parts = asset.Url.Split('.');
             string ext = parts[parts.Length - 1];
-            tempFile += unixTimeNow + "_oxy."+ext;
+            _tempFile += unixTimeNow + "_oxy."+ext;
 
             // Download and unpack on download complete
-            DownloadUpdate(downloadableAsset.browser_download_url, tempFile);
+            DownloadUpdate(asset.Url, _tempFile);
         }
     }
 }

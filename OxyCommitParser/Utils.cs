@@ -1,8 +1,11 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 namespace OxyCommitParser
 {
@@ -17,13 +20,15 @@ namespace OxyCommitParser
     public class ENoEntryPoint : Exception
     {
         public ENoEntryPoint() :
-            base("This xrCore library is too old, invalid or not supposed to be used as updatable!")
+            base("This xrCore library is too old, invalid or not supposed to be used as updateable!")
         {
         }
     }
 
     public static class Utils
     {
+        public const string BaseApi = "https://api.github.com/repos/xrOxygen/xray-oxygen/";
+
         [DllImport("kernel32.dll")]
         private static extern IntPtr LoadLibrary(string dllToLoad);
 
@@ -36,29 +41,37 @@ namespace OxyCommitParser
         [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         delegate IntPtr GetCurrentHashDelegate();
 
-        private static T DownloadSerializedJsonData<T>(string url) where T : class
+        public static T DownloadSerializedJsonData<T>(string url) where T : class
         {
-            using (var w = new WebClient())
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            request.UserAgent = "OxyCommitParser";
+
+            try
             {
-                w.Headers["User-Agent"] =
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36";
-
-                var json_data = string.Empty;
-
-                try
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                using (Stream stream = response.GetResponseStream())
+                using (StreamReader reader =
+                    new StreamReader(stream ?? throw new NullReferenceException("Response stream is null.")))
                 {
-                    json_data = w.DownloadString(url);
-                }
-                catch (Exception)
-                {
-                    return null;
-                }
+                    var str = reader.ReadToEnd();
 
-                return !string.IsNullOrEmpty(json_data) ? JsonConvert.DeserializeObject<T>(json_data) : null;
+                    var rawCommits = JsonConvert.DeserializeObject<T>(str);
+
+                    return rawCommits;
+                }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+
+                Application.Exit();
+            }
+
+            return default;
         }
 
-        public static string GetReleaseHash(string corePath)
+        public static string GetLocalReleaseHash(string corePath)
         {
             IntPtr libHandle = LoadLibrary(corePath.Trim());
 
@@ -79,26 +92,15 @@ namespace OxyCommitParser
             return localHash;
         }
 
-        public static GithubRelease GetRemoteRelease() =>
-            DownloadSerializedJsonData<GithubRelease>(
-                "https://api.github.com/repos/xrOxygen/xray-oxygen/releases/latest");
+        internal static Release GetLatestRelease() =>
+            DownloadSerializedJsonData<Release>($"{BaseApi}releases/latest");
 
-        public static GithubRelease GetRemoteRelease(string hash)
+        internal static Release GetReleaseByHash(string hash)
         {
-            GithubRelease[] releases =
-                DownloadSerializedJsonData<GithubRelease[]>(
-                    "https://api.github.com/repos/xrOxygen/xray-oxygen/releases");
+            var releases =
+                DownloadSerializedJsonData<List<Release>>($"{BaseApi}releases");
 
-            GithubRelease release = null;
-
-            foreach (GithubRelease item in releases)
-            {
-                if (!item.target_commitish.StartsWith(hash)) continue;
-                release = item;
-                break;
-            }
-
-            return release;
+            return releases.FirstOrDefault(r => r.Hash.StartsWith(hash));
         }
 
         public static void CopyFolder(string sourceFolder, string destFolder)
