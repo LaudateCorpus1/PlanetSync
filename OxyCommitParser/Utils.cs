@@ -97,7 +97,7 @@ namespace OxyCommitParser
 
         internal static Release GetReleaseByHash(string hash)
         {
-            var releases =
+            List<Release> releases =
                 DownloadSerializedJsonData<List<Release>>($"{BaseApi}releases");
 
             return releases.FirstOrDefault(r => r.Hash.StartsWith(hash));

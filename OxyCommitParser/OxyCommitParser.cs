@@ -2,13 +2,13 @@
 {
     static class OxyCommitParser
     {
-        internal static Commit GetCommitByHash(string hash)
+        internal static CommitQueryResponse GetCommitByHash(string hash)
         {
             string url = $"{Utils.BaseApi}commits/{hash}";
 
-            var rawCommit = Utils.DownloadSerializedJsonData<dynamic>(url);
+            CommitQueryResponse rawCommit = Utils.DownloadSerializedJsonData<CommitQueryResponse>(url);
 
-            return new Commit(rawCommit);
+            return rawCommit;
         }
 	}
 }

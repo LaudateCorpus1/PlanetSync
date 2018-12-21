@@ -121,7 +121,7 @@ namespace OxyCommitParser
             }
 
 			Release localReleaseInfo = null;
-			Commit localCommitInfo = null;
+            CommitQueryResponse localCommitInfo = null;
 
 			if (!string.IsNullOrEmpty(localHash))
 			{
@@ -138,8 +138,8 @@ namespace OxyCommitParser
 			            : localReleaseInfo.Message.Replace("\r\n", Environment.NewLine);
 
 			        lcommitDate.Text = localReleaseInfo.PublishedDate.ToString(CultureInfo.InvariantCulture);
-			        lcommitAuthor.Text = localReleaseInfo.Author.Login;
-			        lcommiteeAvatar.LoadAsync(localReleaseInfo.Author.Avatar);
+			        lcommitAuthor.Text = localReleaseInfo.Author.login;
+			        lcommiteeAvatar.LoadAsync(localReleaseInfo.Author.avatar_url);
 			    }
 			    else
 			    {
@@ -147,10 +147,10 @@ namespace OxyCommitParser
 
 			        localCommitInfo = OxyCommitParser.GetCommitByHash(localHash);
 
-			        lcommitText.Text = HelperTextGen(localCommitInfo.Message);
-			        lcommitDate.Text = localCommitInfo.Date.ToString(CultureInfo.InvariantCulture);
-			        lcommitAuthor.Text = localCommitInfo.Author.Login;
-			        lcommiteeAvatar.LoadAsync(localCommitInfo.Author.Avatar);
+			        lcommitText.Text = HelperTextGen(localCommitInfo.commit.message);
+                    lcommitDate.Text = localCommitInfo.commit.author.date.ToString(CultureInfo.InvariantCulture);
+			        lcommitAuthor.Text = localCommitInfo.author.login;
+			        lcommiteeAvatar.LoadAsync(localCommitInfo.author.avatar_url);
 			    }
 			}
 
@@ -158,9 +158,9 @@ namespace OxyCommitParser
 
             Release latestRelease = Utils.GetLatestRelease();
 
-            rcommiteeAvatar.LoadAsync(latestRelease.Author.Avatar);
+            rcommiteeAvatar.LoadAsync(latestRelease.Author.avatar_url);
             LastReleaseName.Text = latestRelease.Name;
-            rcommitAuthor.Text = latestRelease.Author.Login;
+            rcommitAuthor.Text = latestRelease.Author.login;
             rcommitText.Text = string.IsNullOrWhiteSpace(latestRelease.Message) 
                 ? "No description available" 
                 : latestRelease.Message.Replace("\r\n", Environment.NewLine);
@@ -182,7 +182,7 @@ namespace OxyCommitParser
 
             // Do download...
 
-            var asset =
+            Asset asset =
                 latestRelease.Assets.FirstOrDefault(ast => ast.Url.EndsWith(".zip") || ast.Url.EndsWith(".7z"));
 
             if (asset == default(Asset))
