@@ -93,6 +93,10 @@ namespace OxyCommitParser
                     Properties.Settings.Default.xrCorePath = _corePath;
                     Properties.Settings.Default.Save();
                 }
+                else
+                {
+                    _corePath = Properties.Settings.Default.xrCorePath;
+                }
             }
 
             // Retrieving local commit info...
