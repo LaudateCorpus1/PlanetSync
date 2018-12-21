@@ -56,9 +56,9 @@ namespace OxyCommitParser
                 {
                     string str = reader.ReadToEnd();
 
-                    T rawCommits = JsonConvert.DeserializeObject<T>(str);
+                    T rawData = JsonConvert.DeserializeObject<T>(str);
 
-                    return rawCommits;
+                    return rawData;
                 }
             }
             catch (Exception ex)

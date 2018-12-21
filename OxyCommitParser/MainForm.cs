@@ -121,7 +121,7 @@ namespace OxyCommitParser
             }
 
 			Release localReleaseInfo = null;
-            CommitQueryResponse localCommitInfo = null;
+            CommitResponse localCommitInfo = null;
 
 			if (!string.IsNullOrEmpty(localHash))
 			{
@@ -138,8 +138,8 @@ namespace OxyCommitParser
 			            : localReleaseInfo.Message.Replace("\r\n", Environment.NewLine);
 
 			        lcommitDate.Text = localReleaseInfo.PublishedDate.ToString(CultureInfo.InvariantCulture);
-			        lcommitAuthor.Text = localReleaseInfo.Author.login;
-			        lcommiteeAvatar.LoadAsync(localReleaseInfo.Author.avatar_url);
+			        lcommitAuthor.Text = localReleaseInfo.Author.Login;
+			        lcommiteeAvatar.LoadAsync(localReleaseInfo.Author.Avatar);
 			    }
 			    else
 			    {
@@ -147,10 +147,10 @@ namespace OxyCommitParser
 
 			        localCommitInfo = OxyCommitParser.GetCommitByHash(localHash);
 
-			        lcommitText.Text = HelperTextGen(localCommitInfo.commit.message);
-                    lcommitDate.Text = localCommitInfo.commit.author.date.ToString(CultureInfo.InvariantCulture);
-			        lcommitAuthor.Text = localCommitInfo.author.login;
-			        lcommiteeAvatar.LoadAsync(localCommitInfo.author.avatar_url);
+			        lcommitText.Text = HelperTextGen(localCommitInfo.CommitInfo.Message);
+                    lcommitDate.Text = localCommitInfo.CommitInfo.AuthorDetails.Date.ToString(CultureInfo.InvariantCulture);
+			        lcommitAuthor.Text = localCommitInfo.Author.Login;
+			        lcommiteeAvatar.LoadAsync(localCommitInfo.Author.Avatar);
 			    }
 			}
 
@@ -158,9 +158,9 @@ namespace OxyCommitParser
 
             Release latestRelease = Utils.GetLatestRelease();
 
-            rcommiteeAvatar.LoadAsync(latestRelease.Author.avatar_url);
+            rcommiteeAvatar.LoadAsync(latestRelease.Author.Avatar);
             LastReleaseName.Text = latestRelease.Name;
-            rcommitAuthor.Text = latestRelease.Author.login;
+            rcommitAuthor.Text = latestRelease.Author.Login;
             rcommitText.Text = string.IsNullOrWhiteSpace(latestRelease.Message) 
                 ? "No description available" 
                 : latestRelease.Message.Replace("\r\n", Environment.NewLine);
