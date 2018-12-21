@@ -86,13 +86,18 @@ namespace OxyCommitParser
 
             if (!File.Exists(_corePath))
             {
-                if (searchCoreDialog.ShowDialog() != DialogResult.OK) return;
-                _corePath = searchCoreDialog.FileName;
+                if (!File.Exists(Properties.Settings.Default.xrCorePath))
+                {
+                    if (searchCoreDialog.ShowDialog() != DialogResult.OK) return;
+                    _corePath = searchCoreDialog.FileName;
+                    Properties.Settings.Default.xrCorePath = _corePath;
+                    Properties.Settings.Default.Save();
+                }
             }
 
             // Retrieving local commit info...
             string localHash = string.Empty;
-
+            
             try
             {
                 localHash = Utils.GetLocalReleaseHash(_corePath);

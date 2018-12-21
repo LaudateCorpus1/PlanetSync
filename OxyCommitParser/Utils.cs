@@ -54,9 +54,9 @@ namespace OxyCommitParser
                 using (StreamReader reader =
                     new StreamReader(stream ?? throw new NullReferenceException("Response stream is null.")))
                 {
-                    var str = reader.ReadToEnd();
+                    string str = reader.ReadToEnd();
 
-                    var rawCommits = JsonConvert.DeserializeObject<T>(str);
+                    T rawCommits = JsonConvert.DeserializeObject<T>(str);
 
                     return rawCommits;
                 }
