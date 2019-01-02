@@ -65,7 +65,9 @@ namespace OxyCommitParser
             {
                 MessageBox.Show(ex.Message);
 
-                Application.Exit();
+                // Need to revise
+
+                //Application.Exit();
             }
 
             return default;
@@ -100,7 +102,7 @@ namespace OxyCommitParser
             List<Release> releases =
                 DownloadSerializedJsonData<List<Release>>($"{BaseApi}releases");
 
-            return releases.FirstOrDefault(r => r.Hash.StartsWith(hash));
+            return releases?.FirstOrDefault(r => r.Hash.StartsWith(hash));
         }
 
         public static void CopyFolder(string sourceFolder, string destFolder)

@@ -10,42 +10,49 @@ using SevenZipExtractor;
 namespace OxyCommitParser
 {
     public partial class MainForm : Form
-	{
+    {
+        private const string ErrorMessage = "Something went wrong. \nAdditional info:{0}";
+
         string _corePath = "";
         string _tempDir = "";
         string _tempFile = "";
 
-        public MainForm() => InitializeComponent();
+        public MainForm()
+        {
+            InitializeComponent();
+            SetSettingsValues();
+        }
 
-	    private string HelperTextGen(string text)
-		{
-			string newCommitMessage = "";
+        private string HelperTextGen(string text)
+        {
+            string newCommitMessage = "";
 
-			try
-			{
-				var commitMsg = text.Split('\n');
+            try
+            {
+                var commitMsg = text.Split('\n');
 
-				for (int i = 0; i < commitMsg.Length; i++)
-				{
-					if (commitMsg[i].Length > 78)
-					{
-						commitMsg[i] = commitMsg[i].Substring(0, 75) + "-\n          " + commitMsg[i].Substring(76);
-					}
-					newCommitMessage += commitMsg[i] + "\n";
-				}
-			}
-			catch (Exception)
-			{
-				newCommitMessage = text;
-			}
+                for (int i = 0; i < commitMsg.Length; i++)
+                {
+                    if (commitMsg[i].Length > 78)
+                    {
+                        commitMsg[i] = commitMsg[i].Substring(0, 75) + "-\n          " + commitMsg[i].Substring(76);
+                    }
 
-			return newCommitMessage;
-		}
+                    newCommitMessage += commitMsg[i] + "\n";
+                }
+            }
+            catch (Exception)
+            {
+                newCommitMessage = text;
+            }
 
-		void wc_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e) 
-		    => pbUpdate.Value = e.ProgressPercentage;
+            return newCommitMessage;
+        }
 
-	    private void wc_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
+        void wc_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
+            => pbUpdate.Value = e.ProgressPercentage;
+
+        private void wc_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
             pbUpdate.Visible = false;
             pbUpdate.Value = 0;
@@ -72,7 +79,8 @@ namespace OxyCommitParser
             pbUpdate.Visible = true;
             using (WebClient w = new WebClient())
             {
-                w.Headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36";
+                w.Headers["User-Agent"] =
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36";
                 w.DownloadProgressChanged += wc_DownloadProgressChanged;
                 w.DownloadFileCompleted += wc_DownloadFileCompleted;
                 w.DownloadFileAsync(new Uri(url), dest);
@@ -86,12 +94,17 @@ namespace OxyCommitParser
 
             if (!File.Exists(_corePath))
             {
-                if (!File.Exists(Properties.Settings.Default.xrCorePath))
+                if (!Properties.Settings.Default.isRememberLibPath ||
+                    !File.Exists(Properties.Settings.Default.xrCorePath))
                 {
                     if (searchCoreDialog.ShowDialog() != DialogResult.OK) return;
                     _corePath = searchCoreDialog.FileName;
-                    Properties.Settings.Default.xrCorePath = _corePath;
-                    Properties.Settings.Default.Save();
+
+                    if (Properties.Settings.Default.isRememberLibPath)
+                    {
+                        Properties.Settings.Default.xrCorePath = _corePath;
+                        Properties.Settings.Default.Save();
+                    }
                 }
                 else
                 {
@@ -101,7 +114,7 @@ namespace OxyCommitParser
 
             // Retrieving local commit info...
             string localHash = string.Empty;
-            
+
             try
             {
                 localHash = Utils.GetLocalReleaseHash(_corePath);
@@ -117,55 +130,78 @@ namespace OxyCommitParser
             {
                 MessageBox.Show(e.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 lcommitDate.Text = DateTime.Now.ToString();
-				lcommitAuthor.Text = "";
+                lcommitAuthor.Text = "";
             }
 
-			Release localReleaseInfo = null;
+            Release localReleaseInfo = null;
             CommitResponse localCommitInfo = null;
 
-			if (!string.IsNullOrEmpty(localHash))
-			{
-			    // Getting info for local release from GitHub
+            if (!string.IsNullOrEmpty(localHash))
+            {
+                // Getting info for local release from GitHub
 
-				localReleaseInfo = Utils.GetReleaseByHash(localHash);
+                localReleaseInfo = Utils.GetReleaseByHash(localHash);
 
-			    if (localReleaseInfo != default(Release))
-			    {
-			        gbLocal.Text = localReleaseInfo.Name;
+                if (localReleaseInfo != default(Release))
+                {
+                    gbLocal.Text = localReleaseInfo.Name;
 
-			        lcommitText.Text = string.IsNullOrWhiteSpace(localReleaseInfo.Message)
-			            ? "No description available"
-			            : localReleaseInfo.Message.Replace("\r\n", Environment.NewLine);
+                    lcommitText.Text = string.IsNullOrWhiteSpace(localReleaseInfo.Message)
+                        ? "No description available"
+                        : localReleaseInfo.Message.Replace("\r\n", Environment.NewLine);
 
-			        lcommitDate.Text = localReleaseInfo.PublishedDate.ToString(CultureInfo.InvariantCulture);
-			        lcommitAuthor.Text = localReleaseInfo.Author.Login;
-			        lcommiteeAvatar.LoadAsync(localReleaseInfo.Author.Avatar);
-			    }
-			    else
-			    {
+                    lcommitDate.Text = localReleaseInfo.PublishedDate.ToString(CultureInfo.InvariantCulture);
+                    lcommitAuthor.Text = localReleaseInfo.Author.Login;
+                    lcommiteeAvatar.LoadAsync(localReleaseInfo.Author.Avatar);
+                }
+                else
+                {
                     // get info about release commit, if didn't find in releases 
 
-			        localCommitInfo = OxyCommitParser.GetCommitByHash(localHash);
+                    localCommitInfo = OxyCommitParser.GetCommitByHash(localHash);
 
-			        lcommitText.Text = HelperTextGen(localCommitInfo.CommitInfo.Message);
-                    lcommitDate.Text = localCommitInfo.CommitInfo.AuthorDetails.Date.ToString(CultureInfo.InvariantCulture);
-			        lcommitAuthor.Text = localCommitInfo.Author.Login;
-			        lcommiteeAvatar.LoadAsync(localCommitInfo.Author.Avatar);
-			    }
-			}
+                    if (localCommitInfo != default(CommitResponse))
+                    {
+                        lcommitText.Text = HelperTextGen(localCommitInfo.CommitInfo.Message);
+                        lcommitDate.Text =
+                            localCommitInfo.CommitInfo.AuthorDetails.Date.ToString(CultureInfo.InvariantCulture);
+                        lcommitAuthor.Text = localCommitInfo.Author.Login;
+                        lcommiteeAvatar.LoadAsync(localCommitInfo.Author.Avatar);
+                    }
+                    else
+                    {
+                        MessageBox.Show(string.Format(ErrorMessage, "Error in getting local commit info"));
+                    }
+                }
+            }
 
-            // Getting latest release...
+            ManageLatestRelease(localHash, localReleaseInfo, localCommitInfo);
+        }
 
+        private void ManageLatestRelease(string localHash, Release localReleaseInfo, CommitResponse localCommitInfo)
+        {
             Release latestRelease = Utils.GetLatestRelease();
 
-            rcommiteeAvatar.LoadAsync(latestRelease.Author.Avatar);
-            LastReleaseName.Text = latestRelease.Name;
-            rcommitAuthor.Text = latestRelease.Author.Login;
-            rcommitText.Text = string.IsNullOrWhiteSpace(latestRelease.Message) 
-                ? "No description available" 
-                : latestRelease.Message.Replace("\r\n", Environment.NewLine);
-            rcommitDate.Text = latestRelease.PublishedDate.ToString(CultureInfo.InvariantCulture);
+            if (latestRelease != default(Release))
+            {
+                rcommiteeAvatar.LoadAsync(latestRelease.Author.Avatar);
+                LastReleaseName.Text = latestRelease.Name;
+                rcommitAuthor.Text = latestRelease.Author.Login;
+                rcommitText.Text = string.IsNullOrWhiteSpace(latestRelease.Message)
+                    ? "No description available"
+                    : latestRelease.Message.Replace("\r\n", Environment.NewLine);
+                rcommitDate.Text = latestRelease.PublishedDate.ToString(CultureInfo.InvariantCulture);
 
+                UpdateLocalRelease(localHash, latestRelease, localReleaseInfo, localCommitInfo);
+            }
+            else
+            {
+                MessageBox.Show(string.Format(ErrorMessage, "Error in getting last release. Please, try again later."));
+            }
+        }
+
+        private void UpdateLocalRelease(string localHash, Release latestRelease, Release localReleaseInfo, CommitResponse localCommitInfo)
+        {
             bool isUpToDate = latestRelease.Hash.StartsWith(localHash);
 
             // Ask for update if not up to date...
@@ -198,14 +234,24 @@ namespace OxyCommitParser
                 _tempFile += "\\";
             }
 
-            string unixTimeNow = ((int) (DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds).ToString();
+            string unixTimeNow = ((int)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds).ToString();
             _tempDir = $"{_tempFile}oxy_{unixTimeNow}\\";
             string[] parts = asset.Url.Split('.');
             string ext = parts[parts.Length - 1];
-            _tempFile += unixTimeNow + "_oxy."+ext;
+            _tempFile += unixTimeNow + "_oxy." + ext;
 
             // Download and unpack on download complete
             DownloadUpdate(asset.Url, _tempFile);
         }
+
+        private void cbRememberPath_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.isRememberLibPath = cbRememberPath.Checked;
+            Properties.Settings.Default.Save();
+
+            //Application.Restart();
+        }
+
+        private void SetSettingsValues() => cbRememberPath.Checked = Properties.Settings.Default.isRememberLibPath;
     }
 }

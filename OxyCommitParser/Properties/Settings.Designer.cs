@@ -34,5 +34,17 @@ namespace OxyCommitParser.Properties {
                 this["xrCorePath"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool isRememberLibPath {
+            get {
+                return ((bool)(this["isRememberLibPath"]));
+            }
+            set {
+                this["isRememberLibPath"] = value;
+            }
+        }
     }
 }
