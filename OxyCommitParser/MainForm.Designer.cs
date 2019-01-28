@@ -49,6 +49,9 @@
             this.gbSettings = new System.Windows.Forms.GroupBox();
             this.cbRememberPath = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.exitLabel = new System.Windows.Forms.Label();
+            this.minimazeLabel = new System.Windows.Forms.Label();
             this.gbRemote.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.rcommiteeAvatar)).BeginInit();
             this.gbLocal.SuspendLayout();
@@ -70,7 +73,7 @@
             this.gbRemote.Controls.Add(this.rcommitText);
             this.gbRemote.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.gbRemote.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.gbRemote.Location = new System.Drawing.Point(607, 3);
+            this.gbRemote.Location = new System.Drawing.Point(607, 41);
             this.gbRemote.Name = "gbRemote";
             this.gbRemote.Size = new System.Drawing.Size(400, 108);
             this.gbRemote.TabIndex = 0;
@@ -168,7 +171,7 @@
             this.gbLocal.Controls.Add(this.bCheck);
             this.gbLocal.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.gbLocal.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.gbLocal.Location = new System.Drawing.Point(607, 117);
+            this.gbLocal.Location = new System.Drawing.Point(607, 155);
             this.gbLocal.Name = "gbLocal";
             this.gbLocal.Size = new System.Drawing.Size(400, 108);
             this.gbLocal.TabIndex = 5;
@@ -253,7 +256,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pbUpdate.BackColor = System.Drawing.Color.White;
             this.pbUpdate.ForeColor = System.Drawing.Color.SteelBlue;
-            this.pbUpdate.Location = new System.Drawing.Point(607, 231);
+            this.pbUpdate.Location = new System.Drawing.Point(607, 269);
             this.pbUpdate.MarqueeAnimationSpeed = 250;
             this.pbUpdate.Name = "pbUpdate";
             this.pbUpdate.Size = new System.Drawing.Size(400, 10);
@@ -272,7 +275,7 @@
             this.gbSettings.Controls.Add(this.label1);
             this.gbSettings.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.gbSettings.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.gbSettings.Location = new System.Drawing.Point(607, 391);
+            this.gbSettings.Location = new System.Drawing.Point(607, 400);
             this.gbSettings.Name = "gbSettings";
             this.gbSettings.Size = new System.Drawing.Size(400, 108);
             this.gbSettings.TabIndex = 15;
@@ -298,22 +301,58 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Remember xrCore path:";
             // 
+            // label2
+            // 
+            this.label2.BackColor = System.Drawing.SystemColors.GrayText;
+            this.label2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.label2.Location = new System.Drawing.Point(0, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(1008, 20);
+            this.label2.TabIndex = 16;
+            this.label2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.label2_MouseDown);
+            // 
+            // exitLabel
+            // 
+            this.exitLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.exitLabel.Location = new System.Drawing.Point(991, 2);
+            this.exitLabel.Name = "exitLabel";
+            this.exitLabel.Size = new System.Drawing.Size(14, 14);
+            this.exitLabel.TabIndex = 17;
+            this.exitLabel.Click += new System.EventHandler(this.exitLabel_Click);
+            this.exitLabel.MouseEnter += new System.EventHandler(this.exitLabel_MouseEnter);
+            this.exitLabel.MouseLeave += new System.EventHandler(this.exitLabel_MouseLeave);
+            // 
+            // minimazeLabel
+            // 
+            this.minimazeLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.minimazeLabel.Location = new System.Drawing.Point(971, 2);
+            this.minimazeLabel.Name = "minimazeLabel";
+            this.minimazeLabel.Size = new System.Drawing.Size(14, 14);
+            this.minimazeLabel.TabIndex = 18;
+            this.minimazeLabel.Click += new System.EventHandler(this.minimazeLabel_Click);
+            this.minimazeLabel.MouseEnter += new System.EventHandler(this.minimazeLabel_MouseEnter);
+            this.minimazeLabel.MouseLeave += new System.EventHandler(this.minimazeLabel_MouseLeave);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.ClientSize = new System.Drawing.Size(1008, 511);
+            this.ClientSize = new System.Drawing.Size(1008, 520);
+            this.Controls.Add(this.minimazeLabel);
+            this.Controls.Add(this.exitLabel);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.gbSettings);
             this.Controls.Add(this.pbUpdate);
             this.Controls.Add(this.gbLocal);
             this.Controls.Add(this.gbRemote);
             this.DoubleBuffered = true;
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "MainForm";
             this.Text = "X-Ray Oxygen: Sync Planet";
             this.Shown += new System.EventHandler(this.MainForm_Shown);
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MainForm_MouseDown);
             this.gbRemote.ResumeLayout(false);
             this.gbRemote.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.rcommiteeAvatar)).EndInit();
@@ -348,5 +387,8 @@
         private System.Windows.Forms.GroupBox gbSettings;
         private System.Windows.Forms.CheckBox cbRememberPath;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
+        public System.Windows.Forms.Label exitLabel;
+        public System.Windows.Forms.Label minimazeLabel;
     }
 }
