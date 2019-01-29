@@ -1,14 +1,17 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using SevenZipExtractor;
 
 namespace OxyCommitParser
 {
+    
     public partial class MainForm : Form
     {
         private const string ErrorMessage = "Something went wrong. \nAdditional info:{0}";
@@ -253,5 +256,52 @@ namespace OxyCommitParser
         }
 
         private void SetSettingsValues() => cbRememberPath.Checked = Properties.Settings.Default.isRememberLibPath;
+
+        private void MainForm_MouseDown(object sender, MouseEventArgs e){}
+
+        private void label2_MouseDown(object sender, MouseEventArgs e)
+        {
+            NativeMethods.ReleaseCapture();
+            NativeMethods.PostMessage(this.Handle, 0x0112, (IntPtr)0xF012, (IntPtr)0);
+        }
+
+        private void exitLabel_MouseEnter(object sender, EventArgs e)
+        {
+            exitLabel.BackColor = Color.FromArgb(255, 92, 31);
+        }
+
+        private void exitLabel_MouseLeave(object sender, EventArgs e)
+        {
+            exitLabel.BackColor = Color.FromArgb(255, 0, 0);
+        }
+
+        private void exitLabel_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void minimazeLabel_Click(object sender, EventArgs e)
+        {
+            base.WindowState = FormWindowState.Minimized;
+        }
+
+        private void minimazeLabel_MouseEnter(object sender, EventArgs e)
+        {
+            minimazeLabel.BackColor = Color.FromArgb(255, 197, 44);
+        }
+
+        private void minimazeLabel_MouseLeave(object sender, EventArgs e)
+        {
+            minimazeLabel.BackColor = Color.FromArgb(255, 128, 0);
+        }
     }
+    public static class NativeMethods
+    {
+        [DllImport("user32", CharSet = CharSet.Auto)]
+        internal extern static bool PostMessage(IntPtr hWnd, uint Msg, IntPtr WParam, IntPtr LParam);
+
+        [DllImport("user32", CharSet = CharSet.Auto)]
+        internal extern static bool ReleaseCapture();
+    }
+
 }
