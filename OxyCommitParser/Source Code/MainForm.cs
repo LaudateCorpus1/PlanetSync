@@ -97,8 +97,7 @@ namespace OxyCommitParser
 
             if (!File.Exists(_corePath))
             {
-                if (!Properties.Settings.Default.isRememberLibPath ||
-                    !File.Exists(Properties.Settings.Default.xrCorePath))
+                if (!Properties.Settings.Default.isRememberLibPath || !File.Exists(Properties.Settings.Default.xrCorePath))
                 {
                     if (searchCoreDialog.ShowDialog() != DialogResult.OK) return;
                     _corePath = searchCoreDialog.FileName;
@@ -207,13 +206,13 @@ namespace OxyCommitParser
         {
             bool isUpToDate = latestRelease.Hash.StartsWith(localHash);
 
-            // Ask for update if not up to date...
+			// Ask for update if not up to date...
 
-            if (isUpToDate ||
-                latestRelease.Assets.Length == 0 ||
-                localReleaseInfo != null && latestRelease.PublishedDate < localReleaseInfo.PublishedDate ||
-                localCommitInfo != null)
-                return;
+			if(localReleaseInfo != null && latestRelease.PublishedDate <= localReleaseInfo.PublishedDate)
+			{
+				if (isUpToDate || latestRelease.Assets.Length == 0 || localCommitInfo != null)
+					return;
+			}
 
             if (MessageBox.Show("Update to recent release?", "Update", MessageBoxButtons.YesNo,
                     MessageBoxIcon.Question) == DialogResult.No)
@@ -294,8 +293,29 @@ namespace OxyCommitParser
         {
             minimazeLabel.BackColor = Color.FromArgb(255, 128, 0);
         }
-    }
-    public static class NativeMethods
+
+		private void gbSettings_Enter(object sender, EventArgs e)
+		{
+
+		}
+
+		private void button1_Click(object sender, EventArgs e)
+		{
+			string ExePath = _corePath.Substring(0, _corePath.Length - "xrCore.dll".Length);
+
+			System.Diagnostics.Process pApp = new System.Diagnostics.Process();
+			pApp.StartInfo.FileName = ExePath + "xrPlay.exe";
+			pApp.StartInfo.WorkingDirectory = ExePath;
+			pApp.Start();
+		}
+
+		private void button2_Click(object sender, EventArgs e)
+		{
+			Release latestRelease = Utils.GetLatestRelease();
+			UpdateLocalRelease("8bef5e6", latestRelease, Utils.GetReleaseByHash("8bef5e6"), null);
+		}
+	}
+	public static class NativeMethods
     {
         [DllImport("user32", CharSet = CharSet.Auto)]
         internal extern static bool PostMessage(IntPtr hWnd, uint Msg, IntPtr WParam, IntPtr LParam);

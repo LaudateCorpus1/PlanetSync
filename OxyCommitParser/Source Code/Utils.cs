@@ -31,10 +31,10 @@ namespace OxyCommitParser
 
         [DllImport("kernel32.dll")]
         private static extern IntPtr LoadLibrary(string dllToLoad);
-
+        [DllImport("ComBase.dll")]
+        private static extern void CoFreeUnusedLibrariesEx(ulong dwDelay, ulong dwReserved);
         [DllImport("kernel32.dll")]
         private static extern IntPtr GetProcAddress(IntPtr hModule, string procedureName);
-
         [DllImport("kernel32.dll")]
         private static extern bool FreeLibrary(IntPtr hModule);
 
@@ -75,14 +75,25 @@ namespace OxyCommitParser
 
         public static string GetLocalReleaseHash(string corePath)
         {
+			// TBB Malloc using on new Oxygen version
+			IntPtr libHandleTBB = LoadLibrary("tbbmalloc.dll");
             IntPtr libHandle = LoadLibrary(corePath.Trim());
 
-            if (libHandle == IntPtr.Zero)
-                throw new ENoCore();
+			// Check xrCore.dll
+			if (libHandle == IntPtr.Zero)
+			{
+				FreeLibrary(libHandleTBB);
+				throw new ENoCore();
+			}
 
+			// Check GetHash function
             IntPtr procAddress = GetProcAddress(libHandle, "GetCurrentHash");
-            if (procAddress == IntPtr.Zero)
-                throw new ENoEntryPoint();
+			if (procAddress == IntPtr.Zero)
+			{
+				FreeLibrary(libHandle);
+				FreeLibrary(libHandleTBB);
+				throw new ENoEntryPoint();
+			}
 
             GetCurrentHashDelegate getLocalHash =
                 Marshal.GetDelegateForFunctionPointer<GetCurrentHashDelegate>(procAddress);
@@ -90,8 +101,9 @@ namespace OxyCommitParser
             string localHash = Marshal.PtrToStringAnsi(getLocalHash());
 
             FreeLibrary(libHandle);
+			FreeLibrary(libHandleTBB);
 
-            return localHash;
+			return localHash;
         }
 
         internal static Release GetLatestRelease() =>
