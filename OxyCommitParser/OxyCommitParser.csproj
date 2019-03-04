@@ -107,7 +107,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="tbbmalloc.dll" />
+    <Content Include="tbbmalloc.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\SevenZipExtractor.1.0.12\build\SevenZipExtractor.targets" Condition="Exists('..\packages\SevenZipExtractor.1.0.12\build\SevenZipExtractor.targets')" />

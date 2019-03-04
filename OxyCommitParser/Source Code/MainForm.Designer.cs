@@ -47,13 +47,16 @@
 			this.searchCoreDialog = new System.Windows.Forms.OpenFileDialog();
 			this.pbUpdate = new System.Windows.Forms.ProgressBar();
 			this.gbSettings = new System.Windows.Forms.GroupBox();
+			this.dx11FUse = new System.Windows.Forms.RadioButton();
+			this.dx9FUse = new System.Windows.Forms.RadioButton();
+			this.dx9LUse = new System.Windows.Forms.RadioButton();
 			this.button1 = new System.Windows.Forms.Button();
 			this.cbRememberPath = new System.Windows.Forms.CheckBox();
-			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this.exitLabel = new System.Windows.Forms.Label();
 			this.minimazeLabel = new System.Windows.Forms.Label();
 			this.button2 = new System.Windows.Forms.Button();
+			this.ErrorBox = new System.Windows.Forms.RichTextBox();
 			this.gbRemote.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.rcommiteeAvatar)).BeginInit();
 			this.gbLocal.SuspendLayout();
@@ -270,12 +273,14 @@
 			// 
 			// gbSettings
 			// 
-			this.gbSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.gbSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.gbSettings.BackColor = System.Drawing.Color.Transparent;
 			this.gbSettings.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("gbSettings.BackgroundImage")));
+			this.gbSettings.Controls.Add(this.dx11FUse);
+			this.gbSettings.Controls.Add(this.dx9FUse);
+			this.gbSettings.Controls.Add(this.dx9LUse);
 			this.gbSettings.Controls.Add(this.button1);
 			this.gbSettings.Controls.Add(this.cbRememberPath);
-			this.gbSettings.Controls.Add(this.label1);
 			this.gbSettings.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.gbSettings.ForeColor = System.Drawing.SystemColors.ButtonFace;
 			this.gbSettings.Location = new System.Drawing.Point(607, 400);
@@ -285,6 +290,38 @@
 			this.gbSettings.TabStop = false;
 			this.gbSettings.Text = "Settings       ";
 			this.gbSettings.Enter += new System.EventHandler(this.gbSettings_Enter);
+			// 
+			// dx11FUse
+			// 
+			this.dx11FUse.AutoSize = true;
+			this.dx11FUse.Location = new System.Drawing.Point(275, 19);
+			this.dx11FUse.Name = "dx11FUse";
+			this.dx11FUse.Size = new System.Drawing.Size(119, 17);
+			this.dx11FUse.TabIndex = 5;
+			this.dx11FUse.Text = "DX11 Full Dyn.Light";
+			this.dx11FUse.UseVisualStyleBackColor = true;
+			// 
+			// dx9FUse
+			// 
+			this.dx9FUse.AutoSize = true;
+			this.dx9FUse.Checked = true;
+			this.dx9FUse.Location = new System.Drawing.Point(151, 19);
+			this.dx9FUse.Name = "dx9FUse";
+			this.dx9FUse.Size = new System.Drawing.Size(113, 17);
+			this.dx9FUse.TabIndex = 4;
+			this.dx9FUse.TabStop = true;
+			this.dx9FUse.Text = "DX9 Full Dyn.Light";
+			this.dx9FUse.UseVisualStyleBackColor = true;
+			// 
+			// dx9LUse
+			// 
+			this.dx9LUse.AutoSize = true;
+			this.dx9LUse.Location = new System.Drawing.Point(6, 19);
+			this.dx9LUse.Name = "dx9LUse";
+			this.dx9LUse.Size = new System.Drawing.Size(139, 17);
+			this.dx9LUse.TabIndex = 3;
+			this.dx9LUse.Text = "DX9 Fast Dynamic Light";
+			this.dx9LUse.UseVisualStyleBackColor = true;
 			// 
 			// button1
 			// 
@@ -301,21 +338,15 @@
 			// cbRememberPath
 			// 
 			this.cbRememberPath.AutoSize = true;
-			this.cbRememberPath.Location = new System.Drawing.Point(374, 88);
+			this.cbRememberPath.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.cbRememberPath.Location = new System.Drawing.Point(257, 91);
 			this.cbRememberPath.Name = "cbRememberPath";
-			this.cbRememberPath.Size = new System.Drawing.Size(15, 14);
+			this.cbRememberPath.Size = new System.Drawing.Size(137, 17);
 			this.cbRememberPath.TabIndex = 1;
+			this.cbRememberPath.Text = "Remember xrCore path:";
+			this.cbRememberPath.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.cbRememberPath.UseVisualStyleBackColor = true;
 			this.cbRememberPath.CheckedChanged += new System.EventHandler(this.cbRememberPath_CheckedChanged);
-			// 
-			// label1
-			// 
-			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(250, 88);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(118, 13);
-			this.label1.TabIndex = 0;
-			this.label1.Text = "Remember xrCore path:";
 			// 
 			// label2
 			// 
@@ -365,6 +396,16 @@
 			this.button2.UseVisualStyleBackColor = false;
 			this.button2.Click += new System.EventHandler(this.button2_Click);
 			// 
+			// ErrorBox
+			// 
+			this.ErrorBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.ErrorBox.Location = new System.Drawing.Point(13, 24);
+			this.ErrorBox.Name = "ErrorBox";
+			this.ErrorBox.Size = new System.Drawing.Size(562, 271);
+			this.ErrorBox.TabIndex = 19;
+			this.ErrorBox.Text = "";
+			this.ErrorBox.Visible = false;
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -372,6 +413,7 @@
 			this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
 			this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
 			this.ClientSize = new System.Drawing.Size(1008, 520);
+			this.Controls.Add(this.ErrorBox);
 			this.Controls.Add(this.button2);
 			this.Controls.Add(this.minimazeLabel);
 			this.Controls.Add(this.exitLabel);
@@ -419,11 +461,14 @@
 		private System.Windows.Forms.Label SysLastReleaseName;
         private System.Windows.Forms.GroupBox gbSettings;
         private System.Windows.Forms.CheckBox cbRememberPath;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         public System.Windows.Forms.Label exitLabel;
         public System.Windows.Forms.Label minimazeLabel;
 		private System.Windows.Forms.Button button1;
 		private System.Windows.Forms.Button button2;
+		private System.Windows.Forms.RadioButton dx9FUse;
+		private System.Windows.Forms.RadioButton dx9LUse;
+		private System.Windows.Forms.RadioButton dx11FUse;
+		private System.Windows.Forms.RichTextBox ErrorBox;
 	}
 }

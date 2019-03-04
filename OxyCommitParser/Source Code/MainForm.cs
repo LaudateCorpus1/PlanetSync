@@ -94,8 +94,11 @@ namespace OxyCommitParser
         {
             // Looking for xrCore...
             _corePath = "xrCore.dll";
+			dx9LUse.Checked  = (Properties.Settings.Default.RenderMode == "r2");
+			dx9FUse.Checked  = (Properties.Settings.Default.RenderMode == "r2.5");
+			dx11FUse.Checked = (Properties.Settings.Default.RenderMode == "r4");
 
-            if (!File.Exists(_corePath))
+			if (!File.Exists(_corePath))
             {
                 if (!Properties.Settings.Default.isRememberLibPath || !File.Exists(Properties.Settings.Default.xrCorePath))
                 {
@@ -178,9 +181,12 @@ namespace OxyCommitParser
             }
 
             ManageLatestRelease(localHash, localReleaseInfo, localCommitInfo);
-        }
 
-        private void ManageLatestRelease(string localHash, Release localReleaseInfo, CommitResponse localCommitInfo)
+			if (!CheckLastDump())
+				CheckLastLog();
+		}
+
+		private void ManageLatestRelease(string localHash, Release localReleaseInfo, CommitResponse localCommitInfo)
         {
             Release latestRelease = Utils.GetLatestRelease();
 
@@ -298,13 +304,143 @@ namespace OxyCommitParser
 		{
 
 		}
+		void CheckLastLog()
+		{
+			DateTime DTime = new DateTime(1990, 1, 1);
+			string LogFileName = "";
+			string LogFilePath = _corePath.Substring(0, _corePath.Length - "xrCore.dll".Length) + "..\\userdata\\logs\\";
+			FileSystemInfo[] FileSystemInfo = new DirectoryInfo(LogFilePath).GetFileSystemInfos();
+			foreach (FileSystemInfo fileSI in FileSystemInfo)
+			{
+				if (fileSI.Extension == ".log")
+				{
+					DateTime CurrDate = fileSI.LastWriteTime;
+					if (DTime < fileSI.CreationTime)
+					{
+						LogFileName = fileSI.Name;
+					}
+					DTime = fileSI.CreationTime;
+				}
+			}
 
+			// Check errors
+			bool bNoError = false;
+			string TempLineStr = "";
+			StreamReader file = new StreamReader(LogFilePath + LogFileName);
+			while ((TempLineStr = file.ReadLine()) != null)
+			{
+				if (TempLineStr.Contains("[error]"))
+					bNoError = true;
+			}
+			file.Close();
+			if (!bNoError || Properties.Settings.Default.LastFileLog == LogFileName) return;
+			Properties.Settings.Default.LastFileLog = LogFileName;
+			ErrorBox.Visible = true;
+			Properties.Settings.Default.Save();
+
+			ErrorBox.Text += "[Local Info] \n";
+			PrintLogInfo(LogFileName, LogFilePath);
+		}
+		bool CheckLastDump()
+		{
+			DateTime DTime = new DateTime(1990, 1, 1);
+			string DumpFileName = "";
+			string LogFileName = "";
+			string DumpFilePath = _corePath.Substring(0, _corePath.Length - "xrCore.dll".Length) + "..\\userdata\\dumps\\";
+			string LogFilePath = _corePath.Substring(0, _corePath.Length - "xrCore.dll".Length) + "..\\userdata\\logs\\";
+			FileSystemInfo[] FileSystemInfo = new DirectoryInfo(DumpFilePath).GetFileSystemInfos();
+
+			foreach (FileSystemInfo fileSI in FileSystemInfo)
+			{
+				if (fileSI.Extension == ".mdmp")
+				{
+					if (DTime < fileSI.CreationTime)
+					{
+						DumpFileName = fileSI.Name;
+					}
+					DTime = fileSI.CreationTime;
+				}
+			}
+			
+			FileSystemInfo = new DirectoryInfo(LogFilePath).GetFileSystemInfos();
+			foreach (FileSystemInfo fileSI in FileSystemInfo)
+			{
+				if (fileSI.Extension == ".log")
+				{
+					DateTime CurrDate = fileSI.LastWriteTime;
+					if (CurrDate.Date == DTime.Date && CurrDate.Hour == DTime.Hour && CurrDate.Minute == DTime.Minute)
+					{
+						LogFileName = fileSI.Name;
+					}
+				}
+			}
+			// Skip
+			if (DumpFileName == "" && LogFileName == "" || Properties.Settings.Default.LastFileDump == DumpFileName)
+			{
+				ErrorBox.Visible = false;
+				return false;
+			}
+			Properties.Settings.Default.LastFileDump = DumpFileName;
+			ErrorBox.Visible = true;
+			Properties.Settings.Default.Save();
+
+			ErrorBox.Text += "[Local Info] \n";
+			ErrorBox.Text += "dump = " + DumpFilePath + DumpFileName + "\n";
+			PrintLogInfo(LogFileName, LogFilePath);
+			return true;
+		}
+		void PrintLogInfo(string LogFileName, string LogFilePath)
+		{
+			bool bAddedEmptyLine = false;
+			StreamReader file = new StreamReader(LogFilePath + LogFileName);
+
+			string TempLineStr = "";
+			while ((TempLineStr = file.ReadLine()) != null)
+			{
+				if (TempLineStr.Contains("xrCore build"))
+				{
+					ErrorBox.Text += "build  = " + TempLineStr.Substring(10) + "\n";
+					continue;
+				}
+				if (TempLineStr.Contains("xrOxygen Version"))
+				{
+					ErrorBox.Text += "oxygen = " + TempLineStr.Substring(10) + "\n";
+					continue;
+				}
+				if (TempLineStr.Contains("Loading DLL:"))
+				{
+					ErrorBox.Text += "module = " + TempLineStr.Substring(10) + "\n";
+					continue;
+				}
+				if (TempLineStr.Contains("[error]"))
+				{
+					if (!bAddedEmptyLine)
+					{
+						ErrorBox.Text += "\n[Errors]\n";
+						bAddedEmptyLine = true;
+					}
+
+					ErrorBox.Text += TempLineStr.Substring(10) + "\n";
+					continue;
+				}
+			}
+			file.Close();
+		}
 		private void button1_Click(object sender, EventArgs e)
 		{
+			if(!CheckLastDump())
+				CheckLastLog();
+
 			string ExePath = _corePath.Substring(0, _corePath.Length - "xrCore.dll".Length);
+
+			if (dx9LUse.Checked)  Properties.Settings.Default.RenderMode = "r2";
+			if (dx9FUse.Checked)  Properties.Settings.Default.RenderMode = "r2.5";
+			if (dx11FUse.Checked) Properties.Settings.Default.RenderMode = "r4";
+			Properties.Settings.Default.Save();
 
 			System.Diagnostics.Process pApp = new System.Diagnostics.Process();
 			pApp.StartInfo.FileName = ExePath + "xrPlay.exe";
+			pApp.StartInfo.Arguments += "-" + Properties.Settings.Default.RenderMode;
 			pApp.StartInfo.WorkingDirectory = ExePath;
 			pApp.Start();
 		}
