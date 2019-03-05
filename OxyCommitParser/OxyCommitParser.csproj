@@ -58,6 +58,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Source Code\ModLibrary.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Source Code\ModLibrary.Designer.cs">
+      <DependentUpon>ModLibrary.cs</DependentUpon>
+    </Compile>
     <Compile Include="Source Code\GitResponse.cs" />
     <Compile Include="Source Code\MainForm.cs">
       <SubType>Form</SubType>
@@ -99,6 +105,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Source Code\ModLibrary.resx">
+      <DependentUpon>ModLibrary.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\xrCoreWrapper\xrPlay.vcxproj">
@@ -107,6 +116,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\MainBack.png" />
     <Content Include="tbbmalloc.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

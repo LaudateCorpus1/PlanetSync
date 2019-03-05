@@ -15,8 +15,9 @@ namespace OxyCommitParser
     public partial class MainForm : Form
     {
         private const string ErrorMessage = "Something went wrong. \nAdditional info:{0}";
+		private ModLibrary ModLibForm;
 
-        string _corePath = "";
+		string _corePath = "";
         string _tempDir = "";
         string _tempFile = "";
 
@@ -24,7 +25,9 @@ namespace OxyCommitParser
         {
             InitializeComponent();
             SetSettingsValues();
-        }
+
+			ModLibForm = new ModLibrary();
+		}
 
         private string HelperTextGen(string text)
         {
@@ -449,6 +452,11 @@ namespace OxyCommitParser
 		{
 			Release latestRelease = Utils.GetLatestRelease();
 			UpdateLocalRelease("8bef5e6", latestRelease, Utils.GetReleaseByHash("8bef5e6"), null);
+		}
+
+		private void button3_Click(object sender, EventArgs e)
+		{
+			ModLibForm.ShowDialog();
 		}
 	}
 	public static class NativeMethods
