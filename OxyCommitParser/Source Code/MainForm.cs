@@ -15,7 +15,7 @@ namespace OxyCommitParser
     public partial class MainForm : Form
     {
         private const string ErrorMessage = "Something went wrong. \nAdditional info:{0}";
-		private ModLibrary ModLibForm;
+		private readonly ModLibrary _modLibForm;
 
 		string _corePath = "";
         string _tempDir = "";
@@ -26,7 +26,7 @@ namespace OxyCommitParser
             InitializeComponent();
             SetSettingsValues();
 
-			ModLibForm = new ModLibrary();
+			_modLibForm = new ModLibrary();
 		}
 
         private string HelperTextGen(string text)
@@ -127,7 +127,6 @@ namespace OxyCommitParser
             {
                 localHash = Utils.GetLocalReleaseHash(_corePath);
             }
-
             catch (Exception ex) when (ex is ENoCore || ex is ENoEntryPoint)
             {
                 lcommitText.Text = ex.Message;
@@ -456,7 +455,7 @@ namespace OxyCommitParser
 
 		private void button3_Click(object sender, EventArgs e)
 		{
-			ModLibForm.ShowDialog();
+			_modLibForm.ShowDialog();
 		}
 	}
 	public static class NativeMethods

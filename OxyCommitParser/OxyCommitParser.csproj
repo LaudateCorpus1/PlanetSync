@@ -88,14 +88,17 @@
     <Compile Include="Source Code\Utils.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Another\App.config">
-      <SubType>Designer</SubType>
+    <None Include="..\packages\SevenZipExtractor.1.0.12\build\7zDll\x64\7z.dll">
+      <Link>Resources\Thirdparty\x64\7z.dll</Link>
     </None>
-    <None Include="Another\packages.config" />
+    <None Include="..\packages\SevenZipExtractor.1.0.12\build\7zDll\x86\7z.dll">
+      <Link>Resources\Thirdparty\x86\7z.dll</Link>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Resources\Images\MainBack.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Source Code\MainForm.resx">
@@ -116,8 +119,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\MainBack.png" />
-    <Content Include="tbbmalloc.dll">
+    <None Include="Resources\Configurations\App.config" />
+    <None Include="Resources\Configurations\packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\Thirdparty\SevenZip" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\Thirdparty\TbbMalloc\tbbmalloc.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
