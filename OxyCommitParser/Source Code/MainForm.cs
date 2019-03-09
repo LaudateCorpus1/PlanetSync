@@ -165,7 +165,7 @@ namespace OxyCommitParser
                 {
                     // get info about release commit, if didn't find in releases 
 
-                    localCommitInfo = OxyCommitParser.GetCommitByHash(localHash);
+                    localCommitInfo = Utils.GetCommitByHash(localHash);
 
                     if (localCommitInfo != default(CommitResponse))
                     {

@@ -32,8 +32,6 @@ namespace OxyCommitParser
         [DllImport("kernel32.dll")]
         private static extern IntPtr LoadLibrary(string dllToLoad);
         [DllImport("ComBase.dll")]
-        private static extern void CoFreeUnusedLibrariesEx(ulong dwDelay, ulong dwReserved);
-        [DllImport("kernel32.dll")]
         private static extern IntPtr GetProcAddress(IntPtr hModule, string procedureName);
         [DllImport("kernel32.dll")]
         private static extern bool FreeLibrary(IntPtr hModule);
@@ -65,7 +63,7 @@ namespace OxyCommitParser
             {
                 MessageBox.Show(ex.Message);
 
-                // Need to revise
+                // TODO: Need to revise
 
                 //Application.Exit();
             }
@@ -76,22 +74,22 @@ namespace OxyCommitParser
         public static string GetLocalReleaseHash(string corePath)
         {
 			// TBB Malloc using on new Oxygen version
-			IntPtr libHandleTBB = LoadLibrary("tbbmalloc.dll");
-            IntPtr libHandle = LoadLibrary(corePath.Trim());
+			IntPtr handleTbb = LoadLibrary("tbbmalloc.dll");
+            IntPtr handleXrCode = LoadLibrary(corePath.Trim());
 
 			// Check xrCore.dll
-			if (libHandle == IntPtr.Zero)
+			if (handleXrCode == IntPtr.Zero)
 			{
-				FreeLibrary(libHandleTBB);
+				FreeLibrary(handleTbb);
 				throw new ENoCore();
 			}
 
 			// Check GetHash function
-            IntPtr procAddress = GetProcAddress(libHandle, "GetCurrentHash");
+            IntPtr procAddress = GetProcAddress(handleXrCode, "GetCurrentHash");
 			if (procAddress == IntPtr.Zero)
 			{
-				FreeLibrary(libHandle);
-				FreeLibrary(libHandleTBB);
+				FreeLibrary(handleXrCode);
+				FreeLibrary(handleTbb);
 				throw new ENoEntryPoint();
 			}
 
@@ -100,8 +98,8 @@ namespace OxyCommitParser
 
             string localHash = Marshal.PtrToStringAnsi(getLocalHash());
 
-            FreeLibrary(libHandle);
-			FreeLibrary(libHandleTBB);
+            FreeLibrary(handleXrCode);
+			FreeLibrary(handleTbb);
 
 			return localHash;
         }
@@ -137,6 +135,15 @@ namespace OxyCommitParser
                 string dest = Path.Combine(destFolder, name);
                 CopyFolder(folder, dest);
             }
+        }
+
+        internal static CommitResponse GetCommitByHash(string hash)
+        {
+            string url = $"{Utils.BaseApi}commits/{hash}";
+
+            CommitResponse rawCommit = Utils.DownloadSerializedJsonData<CommitResponse>(url);
+
+            return rawCommit;
         }
     }
 }
