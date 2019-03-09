@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Net;
+using System.Net.Security;
+using System.Windows.Forms;
 
 namespace OxyCommitParser
 {
@@ -10,14 +12,14 @@ namespace OxyCommitParser
 	    {
 	        // Little magic for https enabling
 	        ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, error) =>
-	            error == System.Net.Security.SslPolicyErrors.None;
+	            error == SslPolicyErrors.None;
 
-	        ServicePointManager.SecurityProtocol =
+	        ServicePointManager.SecurityProtocol =	/* What the heck is "(SecurityProtocolType) 3072"? */
 	            SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | (SecurityProtocolType) 3072;
 
-	        System.Windows.Forms.Application.EnableVisualStyles();
-	        System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
-	        System.Windows.Forms.Application.Run(new MainForm());
+	        Application.EnableVisualStyles();
+	        Application.SetCompatibleTextRenderingDefault(false);
+	        Application.Run(new MainForm());
 	    }
 	}
 }
