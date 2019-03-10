@@ -55,7 +55,7 @@
 			this.label2 = new System.Windows.Forms.Label();
 			this.exitLabel = new System.Windows.Forms.Label();
 			this.minimazeLabel = new System.Windows.Forms.Label();
-			this.button2 = new System.Windows.Forms.Button();
+			this.btnDownLast = new System.Windows.Forms.Button();
 			this.ErrorBox = new System.Windows.Forms.RichTextBox();
 			this.button3 = new System.Windows.Forms.Button();
 			this.gbRemote.SuspendLayout();
@@ -384,18 +384,18 @@
 			this.minimazeLabel.MouseEnter += new System.EventHandler(this.minimazeLabel_MouseEnter);
 			this.minimazeLabel.MouseLeave += new System.EventHandler(this.minimazeLabel_MouseLeave);
 			// 
-			// button2
+			// btnDownLast
 			// 
-			this.button2.BackColor = System.Drawing.Color.Transparent;
-			this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.button2.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-			this.button2.Location = new System.Drawing.Point(913, 285);
-			this.button2.Name = "button2";
-			this.button2.Size = new System.Drawing.Size(92, 23);
-			this.button2.TabIndex = 3;
-			this.button2.Text = "Download last";
-			this.button2.UseVisualStyleBackColor = false;
-			this.button2.Click += new System.EventHandler(this.button2_Click);
+			this.btnDownLast.BackColor = System.Drawing.Color.Transparent;
+			this.btnDownLast.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.btnDownLast.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+			this.btnDownLast.Location = new System.Drawing.Point(913, 285);
+			this.btnDownLast.Name = "btnDownLast";
+			this.btnDownLast.Size = new System.Drawing.Size(92, 23);
+			this.btnDownLast.TabIndex = 3;
+			this.btnDownLast.Text = "Download last";
+			this.btnDownLast.UseVisualStyleBackColor = false;
+			this.btnDownLast.Click += new System.EventHandler(this.button2_Click);
 			// 
 			// ErrorBox
 			// 
@@ -428,7 +428,7 @@
 			this.ClientSize = new System.Drawing.Size(1008, 520);
 			this.Controls.Add(this.button3);
 			this.Controls.Add(this.ErrorBox);
-			this.Controls.Add(this.button2);
+			this.Controls.Add(this.btnDownLast);
 			this.Controls.Add(this.minimazeLabel);
 			this.Controls.Add(this.exitLabel);
 			this.Controls.Add(this.label2);
@@ -479,7 +479,7 @@
         public System.Windows.Forms.Label exitLabel;
         public System.Windows.Forms.Label minimazeLabel;
 		private System.Windows.Forms.Button button1;
-		private System.Windows.Forms.Button button2;
+		private System.Windows.Forms.Button btnDownLast;
 		private System.Windows.Forms.RadioButton dx9FUse;
 		private System.Windows.Forms.RadioButton dx9LUse;
 		private System.Windows.Forms.RadioButton dx11FUse;

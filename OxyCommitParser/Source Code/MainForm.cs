@@ -203,7 +203,13 @@ namespace OxyCommitParser
                     : latestRelease.Message.Replace("\r\n", Environment.NewLine);
                 rcommitDate.Text = latestRelease.PublishedDate.ToString(CultureInfo.InvariantCulture);
 
-                UpdateLocalRelease(localHash, latestRelease, localReleaseInfo, localCommitInfo);
+				// Hide LocalInfo box
+				if(latestRelease.Hash == localHash)
+				{
+					gbLocal.Visible = false;
+					btnDownLast.Visible = false;
+				}
+				UpdateLocalRelease(localHash, latestRelease, localReleaseInfo, localCommitInfo);
             }
             else
             {
@@ -216,7 +222,6 @@ namespace OxyCommitParser
             bool isUpToDate = latestRelease.Hash.StartsWith(localHash);
 
 			// Ask for update if not up to date...
-
 			if(localReleaseInfo != null && latestRelease.PublishedDate <= localReleaseInfo.PublishedDate)
 			{
 				if (isUpToDate || latestRelease.Assets.Length == 0 || localCommitInfo != null)
@@ -228,7 +233,6 @@ namespace OxyCommitParser
                 return;
 
             // Do download...
-
             Asset asset =
                 latestRelease.Assets.FirstOrDefault(ast => ast.Url.EndsWith(".zip") || ast.Url.EndsWith(".7z"));
 
@@ -254,60 +258,12 @@ namespace OxyCommitParser
             // Download and unpack on download complete
             DownloadUpdate(asset.Url, _tempFile);
         }
-
-        private void cbRememberPath_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.isRememberLibPath = cbRememberPath.Checked;
-            Properties.Settings.Default.Save();
-
-            //Application.Restart();
-        }
-
-        private void SetSettingsValues() => cbRememberPath.Checked = Properties.Settings.Default.isRememberLibPath;
-
-        private void MainForm_MouseDown(object sender, MouseEventArgs e){}
-
-        private void label2_MouseDown(object sender, MouseEventArgs e)
+		private void label2_MouseDown(object sender, MouseEventArgs e)
         {
             NativeMethods.ReleaseCapture();
             NativeMethods.PostMessage(this.Handle, 0x0112, (IntPtr)0xF012, (IntPtr)0);
         }
-
-        private void exitLabel_MouseEnter(object sender, EventArgs e)
-        {
-            exitLabel.BackColor = Color.FromArgb(255, 92, 31);
-        }
-
-        private void exitLabel_MouseLeave(object sender, EventArgs e)
-        {
-            exitLabel.BackColor = Color.FromArgb(255, 0, 0);
-        }
-
-        private void exitLabel_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
-
-        private void minimazeLabel_Click(object sender, EventArgs e)
-        {
-            base.WindowState = FormWindowState.Minimized;
-        }
-
-        private void minimazeLabel_MouseEnter(object sender, EventArgs e)
-        {
-            minimazeLabel.BackColor = Color.FromArgb(255, 197, 44);
-        }
-
-        private void minimazeLabel_MouseLeave(object sender, EventArgs e)
-        {
-            minimazeLabel.BackColor = Color.FromArgb(255, 128, 0);
-        }
-
-		private void gbSettings_Enter(object sender, EventArgs e)
-		{
-
-		}
-		void CheckLastLog()
+		private void CheckLastLog()
 		{
 			DateTime DTime = new DateTime(1990, 1, 1);
 			string LogFileName = "";
@@ -336,6 +292,7 @@ namespace OxyCommitParser
 					bNoError = true;
 			}
 			file.Close();
+
 			if (!bNoError || Properties.Settings.Default.LastFileLog == LogFileName) return;
 			Properties.Settings.Default.LastFileLog = LogFileName;
 			ErrorBox.Visible = true;
@@ -378,11 +335,12 @@ namespace OxyCommitParser
 				}
 			}
 			// Skip
-			if (DumpFileName == "" && LogFileName == "" || Properties.Settings.Default.LastFileDump == DumpFileName)
+			if ((DumpFileName == "" && LogFileName == "") || Properties.Settings.Default.LastFileDump == DumpFileName)
 			{
 				ErrorBox.Visible = false;
 				return false;
 			}
+
 			Properties.Settings.Default.LastFileDump = DumpFileName;
 			ErrorBox.Visible = true;
 			Properties.Settings.Default.Save();
@@ -448,24 +406,26 @@ namespace OxyCommitParser
 			pApp.Start();
 		}
 
+		// Click events
+		private void SetSettingsValues() => cbRememberPath.Checked = Properties.Settings.Default.isRememberLibPath;
+		private void exitLabel_MouseEnter(object sender, EventArgs e) => exitLabel.BackColor = Color.FromArgb(255, 92, 31);
+		private void exitLabel_MouseLeave(object sender, EventArgs e) => exitLabel.BackColor = Color.FromArgb(255, 0, 0);
+		private void exitLabel_Click(object sender, EventArgs e) => Close();
+		private void minimazeLabel_Click(object sender, EventArgs e) => base.WindowState = FormWindowState.Minimized;
+		private void minimazeLabel_MouseEnter(object sender, EventArgs e) => minimazeLabel.BackColor = Color.FromArgb(255, 197, 44);
+		private void minimazeLabel_MouseLeave(object sender, EventArgs e) => minimazeLabel.BackColor = Color.FromArgb(255, 128, 0);
+		private void button3_Click(object sender, EventArgs e) => ModLibForm.ShowDialog();
+		private void MainForm_MouseDown(object sender, MouseEventArgs e) { }
+		private void gbSettings_Enter(object sender, EventArgs e) { }
 		private void button2_Click(object sender, EventArgs e)
 		{
 			Release latestRelease = Utils.GetLatestRelease();
 			UpdateLocalRelease("8bef5e6", latestRelease, Utils.GetReleaseByHash("8bef5e6"), null);
 		}
-
-		private void button3_Click(object sender, EventArgs e)
+		private void cbRememberPath_CheckedChanged(object sender, EventArgs e)
 		{
-			ModLibForm.ShowDialog();
+			Properties.Settings.Default.isRememberLibPath = cbRememberPath.Checked;
+			Properties.Settings.Default.Save();
 		}
 	}
-	public static class NativeMethods
-    {
-        [DllImport("user32", CharSet = CharSet.Auto)]
-        internal extern static bool PostMessage(IntPtr hWnd, uint Msg, IntPtr WParam, IntPtr LParam);
-
-        [DllImport("user32", CharSet = CharSet.Auto)]
-        internal extern static bool ReleaseCapture();
-    }
-
 }

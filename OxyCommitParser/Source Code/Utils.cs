@@ -16,7 +16,6 @@ namespace OxyCommitParser
         {
         }
     }
-
     public class ENoEntryPoint : Exception
     {
         public ENoEntryPoint() :
@@ -24,8 +23,15 @@ namespace OxyCommitParser
         {
         }
     }
+	public static class NativeMethods
+	{
+		[DllImport("user32", CharSet = CharSet.Auto)]
+		internal extern static bool PostMessage(IntPtr hWnd, uint Msg, IntPtr WParam, IntPtr LParam);
 
-    public static class Utils
+		[DllImport("user32", CharSet = CharSet.Auto)]
+		internal extern static bool ReleaseCapture();
+	}
+	public static class Utils
     {
         public const string BaseApi = "https://api.github.com/repos/xrOxygen/xray-oxygen/";
 
