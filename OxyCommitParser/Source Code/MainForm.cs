@@ -119,9 +119,11 @@ namespace OxyCommitParser
                     _corePath = Properties.Settings.Default.xrCorePath;
                 }
             }
+			tbWorkingDir.Text = (Properties.Settings.Default.WorkDir == "nullptr") ? Path.GetDirectoryName(_corePath) 
+				                                                                   : Properties.Settings.Default.WorkDir;
 
-            // Retrieving local commit info...
-            string localHash = string.Empty;
+			// Retrieving local commit info...
+			string localHash = string.Empty;
 
             try
             {
@@ -267,7 +269,7 @@ namespace OxyCommitParser
 		{
 			DateTime DTime = new DateTime(1990, 1, 1);
 			string LogFileName = "";
-			string LogFilePath = _corePath.Substring(0, _corePath.Length - "xrCore.dll".Length) + "..\\userdata\\logs\\";
+			string LogFilePath = tbWorkingDir.Text + "\\..\\userdata\\logs\\";
 			FileSystemInfo[] FileSystemInfo = new DirectoryInfo(LogFilePath).GetFileSystemInfos();
 			foreach (FileSystemInfo fileSI in FileSystemInfo)
 			{
@@ -306,8 +308,8 @@ namespace OxyCommitParser
 			DateTime DTime = new DateTime(1990, 1, 1);
 			string DumpFileName = "";
 			string LogFileName = "";
-			string DumpFilePath = _corePath.Substring(0, _corePath.Length - "xrCore.dll".Length) + "..\\userdata\\dumps\\";
-			string LogFilePath = _corePath.Substring(0, _corePath.Length - "xrCore.dll".Length) + "..\\userdata\\logs\\";
+			string DumpFilePath = tbWorkingDir.Text + "\\..\\userdata\\dumps\\";
+			string LogFilePath = tbWorkingDir.Text + "\\..\\userdata\\logs\\";
 			FileSystemInfo[] FileSystemInfo = new DirectoryInfo(DumpFilePath).GetFileSystemInfos();
 
 			foreach (FileSystemInfo fileSI in FileSystemInfo)
@@ -397,12 +399,17 @@ namespace OxyCommitParser
 			if (dx9LUse.Checked)  Properties.Settings.Default.RenderMode = "r2";
 			if (dx9FUse.Checked)  Properties.Settings.Default.RenderMode = "r2.5";
 			if (dx11FUse.Checked) Properties.Settings.Default.RenderMode = "r4";
+			Properties.Settings.Default.WorkDir = tbWorkingDir.Text;
 			Properties.Settings.Default.Save();
 
 			System.Diagnostics.Process pApp = new System.Diagnostics.Process();
 			pApp.StartInfo.FileName = ExePath + "xrPlay.exe";
-			pApp.StartInfo.Arguments += "-" + Properties.Settings.Default.RenderMode;
-			pApp.StartInfo.WorkingDirectory = ExePath;
+
+			pApp.StartInfo.Arguments += "-" + Properties.Settings.Default.RenderMode + " ";
+			pApp.StartInfo.Arguments += (textBox1.Text != "Add your keys...") ? textBox1.Text : "";
+
+			// Working dir != binaries dir
+			pApp.StartInfo.WorkingDirectory = tbWorkingDir.Text;
 			pApp.Start();
 		}
 
@@ -426,6 +433,22 @@ namespace OxyCommitParser
 		{
 			Properties.Settings.Default.isRememberLibPath = cbRememberPath.Checked;
 			Properties.Settings.Default.Save();
+		}
+
+		private void textBox1_TextBoxClick(object sender, EventArgs e)
+		{
+			if (textBox1.Text == "Add your keys...")
+				textBox1.Text = "";
+		}
+
+		private void cbAdvSettings_CheckedChanged(object sender, EventArgs e)
+		{
+			bool bVisSettings = cbAdvSettings.Checked;
+
+			textBox1.Visible       = bVisSettings;
+			cbRememberPath.Visible = bVisSettings;
+			lWorkingDir.Visible    = bVisSettings;
+			tbWorkingDir.Visible   = bVisSettings;
 		}
 	}
 }

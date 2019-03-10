@@ -51,6 +51,20 @@ namespace OxyCommitParser.Properties {
 				this["LastFileLog"] = value;
 			}
 		}
+		[global::System.Configuration.UserScopedSettingAttribute()]
+		[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+		[global::System.Configuration.DefaultSettingValueAttribute("")]
+		public string WorkDir
+		{
+			get
+			{
+				return ((string)(this["WorkDir"]));
+			}
+			set
+			{
+				this["WorkDir"] = value;
+			}
+		}
 
 		[global::System.Configuration.UserScopedSettingAttribute()]
 		[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]

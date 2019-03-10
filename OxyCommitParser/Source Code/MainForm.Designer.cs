@@ -47,17 +47,21 @@
 			this.searchCoreDialog = new System.Windows.Forms.OpenFileDialog();
 			this.pbUpdate = new System.Windows.Forms.ProgressBar();
 			this.gbSettings = new System.Windows.Forms.GroupBox();
+			this.cbAdvSettings = new System.Windows.Forms.CheckBox();
 			this.dx11FUse = new System.Windows.Forms.RadioButton();
 			this.dx9FUse = new System.Windows.Forms.RadioButton();
 			this.dx9LUse = new System.Windows.Forms.RadioButton();
-			this.button1 = new System.Windows.Forms.Button();
 			this.cbRememberPath = new System.Windows.Forms.CheckBox();
+			this.button1 = new System.Windows.Forms.Button();
 			this.label2 = new System.Windows.Forms.Label();
 			this.exitLabel = new System.Windows.Forms.Label();
 			this.minimazeLabel = new System.Windows.Forms.Label();
 			this.btnDownLast = new System.Windows.Forms.Button();
 			this.ErrorBox = new System.Windows.Forms.RichTextBox();
 			this.button3 = new System.Windows.Forms.Button();
+			this.textBox1 = new System.Windows.Forms.TextBox();
+			this.tbWorkingDir = new System.Windows.Forms.TextBox();
+			this.lWorkingDir = new System.Windows.Forms.Label();
 			this.gbRemote.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.rcommiteeAvatar)).BeginInit();
 			this.gbLocal.SuspendLayout();
@@ -277,20 +281,35 @@
 			this.gbSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.gbSettings.BackColor = System.Drawing.Color.Transparent;
 			this.gbSettings.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("gbSettings.BackgroundImage")));
+			this.gbSettings.Controls.Add(this.lWorkingDir);
+			this.gbSettings.Controls.Add(this.tbWorkingDir);
+			this.gbSettings.Controls.Add(this.cbAdvSettings);
 			this.gbSettings.Controls.Add(this.dx11FUse);
 			this.gbSettings.Controls.Add(this.dx9FUse);
 			this.gbSettings.Controls.Add(this.dx9LUse);
-			this.gbSettings.Controls.Add(this.button1);
 			this.gbSettings.Controls.Add(this.cbRememberPath);
 			this.gbSettings.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.gbSettings.ForeColor = System.Drawing.SystemColors.ButtonFace;
-			this.gbSettings.Location = new System.Drawing.Point(607, 400);
+			this.gbSettings.Location = new System.Drawing.Point(607, 377);
 			this.gbSettings.Name = "gbSettings";
 			this.gbSettings.Size = new System.Drawing.Size(400, 108);
 			this.gbSettings.TabIndex = 15;
 			this.gbSettings.TabStop = false;
 			this.gbSettings.Text = "Settings       ";
 			this.gbSettings.Enter += new System.EventHandler(this.gbSettings_Enter);
+			// 
+			// cbAdvSettings
+			// 
+			this.cbAdvSettings.AutoSize = true;
+			this.cbAdvSettings.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.cbAdvSettings.Location = new System.Drawing.Point(277, 85);
+			this.cbAdvSettings.Name = "cbAdvSettings";
+			this.cbAdvSettings.Size = new System.Drawing.Size(117, 17);
+			this.cbAdvSettings.TabIndex = 6;
+			this.cbAdvSettings.Text = "Advanced settings:";
+			this.cbAdvSettings.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.cbAdvSettings.UseVisualStyleBackColor = true;
+			this.cbAdvSettings.CheckedChanged += new System.EventHandler(this.cbAdvSettings_CheckedChanged);
 			// 
 			// dx11FUse
 			// 
@@ -324,30 +343,34 @@
 			this.dx9LUse.Text = "DX9 Fast Dynamic Light";
 			this.dx9LUse.UseVisualStyleBackColor = true;
 			// 
-			// button1
-			// 
-			this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.button1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-			this.button1.Location = new System.Drawing.Point(9, 77);
-			this.button1.Name = "button1";
-			this.button1.Size = new System.Drawing.Size(75, 23);
-			this.button1.TabIndex = 2;
-			this.button1.Text = "Play";
-			this.button1.UseVisualStyleBackColor = false;
-			this.button1.Click += new System.EventHandler(this.button1_Click);
-			// 
 			// cbRememberPath
 			// 
 			this.cbRememberPath.AutoSize = true;
 			this.cbRememberPath.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.cbRememberPath.Location = new System.Drawing.Point(257, 91);
+			this.cbRememberPath.Checked = true;
+			this.cbRememberPath.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.cbRememberPath.Location = new System.Drawing.Point(257, 69);
 			this.cbRememberPath.Name = "cbRememberPath";
 			this.cbRememberPath.Size = new System.Drawing.Size(137, 17);
 			this.cbRememberPath.TabIndex = 1;
 			this.cbRememberPath.Text = "Remember xrCore path:";
 			this.cbRememberPath.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.cbRememberPath.UseVisualStyleBackColor = true;
+			this.cbRememberPath.Visible = false;
 			this.cbRememberPath.CheckedChanged += new System.EventHandler(this.cbRememberPath_CheckedChanged);
+			// 
+			// button1
+			// 
+			this.button1.BackColor = System.Drawing.Color.Transparent;
+			this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.button1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+			this.button1.Location = new System.Drawing.Point(932, 491);
+			this.button1.Name = "button1";
+			this.button1.Size = new System.Drawing.Size(75, 23);
+			this.button1.TabIndex = 2;
+			this.button1.Text = "Play";
+			this.button1.UseVisualStyleBackColor = false;
+			this.button1.Click += new System.EventHandler(this.button1_Click);
 			// 
 			// label2
 			// 
@@ -417,7 +440,37 @@
 			this.button3.TabIndex = 20;
 			this.button3.Text = "Mod Library";
 			this.button3.UseVisualStyleBackColor = false;
+			this.button3.Visible = false;
 			this.button3.Click += new System.EventHandler(this.button3_Click);
+			// 
+			// textBox1
+			// 
+			this.textBox1.Location = new System.Drawing.Point(607, 493);
+			this.textBox1.Name = "textBox1";
+			this.textBox1.Size = new System.Drawing.Size(319, 20);
+			this.textBox1.TabIndex = 21;
+			this.textBox1.Text = "Add your keys...";
+			this.textBox1.Visible = false;
+			this.textBox1.WordWrap = false;
+			this.textBox1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.textBox1_TextBoxClick);
+			// 
+			// tbWorkingDir
+			// 
+			this.tbWorkingDir.Location = new System.Drawing.Point(6, 85);
+			this.tbWorkingDir.Name = "tbWorkingDir";
+			this.tbWorkingDir.Size = new System.Drawing.Size(273, 20);
+			this.tbWorkingDir.TabIndex = 7;
+			this.tbWorkingDir.Visible = false;
+			// 
+			// lWorkingDir
+			// 
+			this.lWorkingDir.AutoSize = true;
+			this.lWorkingDir.Location = new System.Drawing.Point(7, 69);
+			this.lWorkingDir.Name = "lWorkingDir";
+			this.lWorkingDir.Size = new System.Drawing.Size(86, 13);
+			this.lWorkingDir.TabIndex = 8;
+			this.lWorkingDir.Text = "Your working dir:";
+			this.lWorkingDir.Visible = false;
 			// 
 			// MainForm
 			// 
@@ -426,9 +479,11 @@
 			this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
 			this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
 			this.ClientSize = new System.Drawing.Size(1008, 520);
+			this.Controls.Add(this.textBox1);
 			this.Controls.Add(this.button3);
 			this.Controls.Add(this.ErrorBox);
 			this.Controls.Add(this.btnDownLast);
+			this.Controls.Add(this.button1);
 			this.Controls.Add(this.minimazeLabel);
 			this.Controls.Add(this.exitLabel);
 			this.Controls.Add(this.label2);
@@ -451,6 +506,7 @@
 			this.gbSettings.ResumeLayout(false);
 			this.gbSettings.PerformLayout();
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 
@@ -485,5 +541,9 @@
 		private System.Windows.Forms.RadioButton dx11FUse;
 		private System.Windows.Forms.RichTextBox ErrorBox;
 		private System.Windows.Forms.Button button3;
+		private System.Windows.Forms.TextBox textBox1;
+		private System.Windows.Forms.CheckBox cbAdvSettings;
+		private System.Windows.Forms.TextBox tbWorkingDir;
+		private System.Windows.Forms.Label lWorkingDir;
 	}
 }
