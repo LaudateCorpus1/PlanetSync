@@ -10,20 +10,38 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OxyCommitParser", "OxyCommi
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xrCoreWrapper", "xrCoreWrapper\xrPlay.vcxproj", "{131A9895-FE16-417A-8C41-16A5994A6D13}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanetSync-Server", "PlanetSync-Server\PlanetSync-Server.csproj", "{88C8819D-B238-44F3-A0A5-887556AE5A42}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D8AB35CF-0753-4091-90B5-4260D6CB6A01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8AB35CF-0753-4091-90B5-4260D6CB6A01}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8AB35CF-0753-4091-90B5-4260D6CB6A01}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{D8AB35CF-0753-4091-90B5-4260D6CB6A01}.Debug|x64.Build.0 = Debug|Any CPU
+		{D8AB35CF-0753-4091-90B5-4260D6CB6A01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8AB35CF-0753-4091-90B5-4260D6CB6A01}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D8AB35CF-0753-4091-90B5-4260D6CB6A01}.Release|x64.ActiveCfg = Release|Any CPU
 		{D8AB35CF-0753-4091-90B5-4260D6CB6A01}.Release|x64.Build.0 = Release|Any CPU
+		{131A9895-FE16-417A-8C41-16A5994A6D13}.Debug|Any CPU.ActiveCfg = Debug|x64
 		{131A9895-FE16-417A-8C41-16A5994A6D13}.Debug|x64.ActiveCfg = Debug|x64
 		{131A9895-FE16-417A-8C41-16A5994A6D13}.Debug|x64.Build.0 = Debug|x64
+		{131A9895-FE16-417A-8C41-16A5994A6D13}.Release|Any CPU.ActiveCfg = Release|x64
 		{131A9895-FE16-417A-8C41-16A5994A6D13}.Release|x64.ActiveCfg = Release|x64
 		{131A9895-FE16-417A-8C41-16A5994A6D13}.Release|x64.Build.0 = Release|x64
+		{88C8819D-B238-44F3-A0A5-887556AE5A42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88C8819D-B238-44F3-A0A5-887556AE5A42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88C8819D-B238-44F3-A0A5-887556AE5A42}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{88C8819D-B238-44F3-A0A5-887556AE5A42}.Debug|x64.Build.0 = Debug|Any CPU
+		{88C8819D-B238-44F3-A0A5-887556AE5A42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88C8819D-B238-44F3-A0A5-887556AE5A42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88C8819D-B238-44F3-A0A5-887556AE5A42}.Release|x64.ActiveCfg = Release|Any CPU
+		{88C8819D-B238-44F3-A0A5-887556AE5A42}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

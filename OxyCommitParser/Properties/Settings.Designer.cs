@@ -22,66 +22,8 @@ namespace OxyCommitParser.Properties {
                 return defaultInstance;
             }
         }
-
-		[global::System.Configuration.UserScopedSettingAttribute()]
-		[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-		[global::System.Configuration.DefaultSettingValueAttribute("")]
-		public string LastFileDump
-		{
-			get
-			{
-				return ((string)(this["LastFileDump"]));
-			}
-			set
-			{
-				this["LastFileDump"] = value;
-			}
-		}
-		[global::System.Configuration.UserScopedSettingAttribute()]
-		[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-		[global::System.Configuration.DefaultSettingValueAttribute("")]
-		public string LastFileLog
-		{
-			get
-			{
-				return ((string)(this["LastFileLog"]));
-			}
-			set
-			{
-				this["LastFileLog"] = value;
-			}
-		}
-		[global::System.Configuration.UserScopedSettingAttribute()]
-		[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-		[global::System.Configuration.DefaultSettingValueAttribute("")]
-		public string WorkDir
-		{
-			get
-			{
-				return ((string)(this["WorkDir"]));
-			}
-			set
-			{
-				this["WorkDir"] = value;
-			}
-		}
-
-		[global::System.Configuration.UserScopedSettingAttribute()]
-		[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-		[global::System.Configuration.DefaultSettingValueAttribute("")]
-		public string RenderMode
-		{
-			get
-			{
-				return ((string)(this["RenderMode"]));
-			}
-			set
-			{
-				this["RenderMode"] = value;
-			}
-		}
-
-		[global::System.Configuration.UserScopedSettingAttribute()]
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string xrCorePath {
